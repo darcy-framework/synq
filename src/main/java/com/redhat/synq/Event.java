@@ -78,7 +78,14 @@ public interface Event<T> {
     }
     
     default PollEvent<T> or(T item, Predicate<? super T> predicate) {
-        return or(() -> item, predicate);
+        return or(new Callable<T>() {
+
+            @Override
+            public T call() throws Exception {
+                return item;
+            }
+            
+        }, predicate);
     }
     
     default PollEvent<T> or(Callable<T> item, Predicate<? super T> predicate) {
@@ -86,7 +93,14 @@ public interface Event<T> {
     }
     
     default PollEvent<T> or(T item, Matcher<? super T> matcher) {
-        return or(() -> item, matcher);
+        return or(new Callable<T>() {
+
+            @Override
+            public T call() throws Exception {
+                return item;
+            }
+            
+        }, matcher);
     }
     
     default PollEvent<T> or(Callable<T> item, Matcher<? super T> matcher) {
@@ -136,7 +150,14 @@ public interface Event<T> {
     }
     
     default <R> PollEvent<T> failIf(R item, Predicate<? super R> predicate) {
-        return failIf(() -> item, predicate);
+        return failIf(new Callable<R>() {
+
+            @Override
+            public R call() throws Exception {
+                return item;
+            }
+            
+        }, predicate);
     }
     
     default <R> PollEvent<T> failIf(Callable<R> item, Predicate<? super R> predicate) {
@@ -144,7 +165,14 @@ public interface Event<T> {
     }
     
     default <R> PollEvent<T> failIf(R item, Matcher<? super R> matcher) {
-        return failIf(() -> item, matcher);
+        return failIf(new Callable<R>() {
+
+            @Override
+            public R call() throws Exception {
+                return item;
+            }
+            
+        }, matcher);
     }
     
     default <R> PollEvent<T> failIf(Callable<R> item, Matcher<? super R> matcher) {
@@ -193,7 +221,14 @@ public interface Event<T> {
      * @return
      */
     default <U> PollEvent<U> andThenExpect(U item, Predicate<? super U> predicate) {
-        return andThenExpect(() -> item, predicate);
+        return andThenExpect(new Callable<U>() {
+
+            @Override
+            public U call() throws Exception {
+                return item;
+            }
+            
+        }, predicate);
     }
     
     /**
@@ -213,7 +248,14 @@ public interface Event<T> {
      * @return
      */
     default <U> PollEvent<U> andThenExpect(U item, Matcher<? super U> matcher) {
-        return andThenExpect(() -> item, matcher);
+        return andThenExpect(new Callable<U>() {
+
+            @Override
+            public U call() throws Exception {
+                return item;
+            }
+            
+        }, matcher);
     }
     
     /**
@@ -248,7 +290,14 @@ public interface Event<T> {
         }
         
         public <R> PollEvent<V> when(R item, Predicate<? super R> predicate) {
-            return when(() -> item, predicate);
+            return when(new Callable<R>() {
+
+                @Override
+                public R call() throws Exception {
+                    return item;
+                }
+                
+            }, predicate);
         }
         
         public <R> PollEvent<V> when(Callable<R> item, Predicate<? super R> predicate) {
@@ -256,7 +305,14 @@ public interface Event<T> {
         }
         
         public <R> PollEvent<V> when(R item, Matcher<? super R> matcher) {
-            return when(() -> item, matcher);
+            return when(new Callable<R>() {
+
+                @Override
+                public R call() throws Exception {
+                    return item;
+                }
+                
+            }, matcher);
         }
         
         public <R> PollEvent<V> when(Callable<R> item, Matcher<? super R> matcher) {

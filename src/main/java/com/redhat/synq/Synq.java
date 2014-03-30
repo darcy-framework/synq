@@ -29,8 +29,8 @@ import org.hamcrest.Matcher;
  * @author ahenning
  *
  */
-public final class Sync {
-    private Sync() {}
+public final class Synq {
+    private Synq() {}
     
     /**
      * Static factory (just for import static sugar).
@@ -50,7 +50,14 @@ public final class Sync {
     }
     
     public static <T> PollEvent<T> expect(T item, Predicate<? super T> predicate) {
-        return expect(() -> item, predicate);
+        return expect(new Callable<T>() {
+
+            @Override
+            public T call() throws Exception {
+                return item;
+            }
+            
+        }, predicate);
     }
     
     public static <T> PollEvent<T> expect(Callable<T> item, Predicate<? super T> predicate) {
@@ -58,7 +65,14 @@ public final class Sync {
     }
     
     public static <T> PollEvent<T> expect(T item, Matcher<? super T> matcher) {
-        return expect(() -> item, matcher);
+        return expect(new Callable<T>() {
+
+            @Override
+            public T call() throws Exception {
+                return item;
+            }
+            
+        }, matcher);
     }
     
     public static <T> PollEvent<T> expect(Callable<T> item, Matcher<? super T> matcher) {
@@ -95,7 +109,14 @@ public final class Sync {
         }
         
         public <T> PollEvent<T> expect(T item, Predicate<? super T> predicate) {
-            return expect(() -> item, predicate);
+            return expect(new Callable<T>() {
+
+                @Override
+                public T call() throws Exception {
+                    return item;
+                }
+                
+            }, predicate);
         }
         
         public <T> PollEvent<T> expect(Callable<T> item, Predicate<? super T> predicate) {
@@ -103,7 +124,14 @@ public final class Sync {
         }
         
         public <T> PollEvent<T> expect(T item, Matcher<? super T> matcher) {
-            return expect(() -> item, matcher);
+            return expect(new Callable<T>() {
+
+                @Override
+                public T call() throws Exception {
+                    return item;
+                }
+                
+            }, matcher);
         }
         
         public <T> PollEvent<T> expect(Callable<T> item, Matcher<? super T> matcher) {
