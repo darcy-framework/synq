@@ -17,40 +17,19 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.redhat.sync;
+package com.redhat.synq;
 
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-public class EventListener<T> implements Event<T> {
-    private CountDownLatch latch = new CountDownLatch(1);
-    private T result;
+public class ForwardingEvent<T> implements Event<T> {
+    private final Event<? extends T> event;
     
-    public void trigger(T result) {
-        this.result = result;
-        latch.countDown();
+    public ForwardingEvent(Event<? extends T> event) {
+        this.event = event;
     }
-    
+
     @Override
     public T waitUpTo(long timeout, TimeUnit unit) {
-        boolean timedOut;
-        
-        try {
-            timedOut = !latch.await(timeout, unit);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            // TODO: Remove event listener
-            return null;
-        }
-        
-        if (timedOut) {
-            // TODO: Improve this
-            // TODO: Remove event listener
-            throw new RuntimeException(new TimeoutException());
-        }
-        
-        return result;
+        return event.waitUpTo(timeout, unit);
     }
-    
 }

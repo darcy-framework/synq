@@ -17,29 +17,18 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.redhat.sync;
+package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
-
-public class MultiEventWithPollEvent<T> extends MultiEvent<T> implements PollEvent<T> {
+public class EventWithThrowable<T> extends ForwardingEvent<T> implements HasThrowable {
+    private final Throwable exception;
     
-    public MultiEventWithPollEvent(Event<? extends T> original, PollEvent<? extends T> additional) {
-        super(original, additional);
+    public EventWithThrowable(Event<? extends T> event, Throwable exception) {
+        super(event);
+        this.exception = exception;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public PollEvent<T> pollingEvery(long pollingInterval, TimeUnit pollingUnit) {
-        ((PollEvent<T>) additional).pollingEvery(pollingInterval, pollingUnit);
-        
-        return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public PollEvent<T> ignoring(Class<? extends Exception> exception) {
-        ((PollEvent<T>) additional).ignoring(exception);
-        
-        return this;
+    public Throwable throwable() {
+        return exception;
     }
 }

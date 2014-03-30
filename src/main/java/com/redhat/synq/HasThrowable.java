@@ -17,12 +17,8 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.redhat.sync;
+package com.redhat.synq;
 
-public class FailEventException extends RuntimeException {
-    private static final long serialVersionUID = -7740040718087166163L;
-    
-    public FailEventException(Event<?> cause) {
-        super(cause.toString());
-    }
+public interface HasThrowable {
+    Throwable throwable();
 }

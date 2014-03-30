@@ -17,7 +17,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.redhat.sync;
+package com.redhat.synq;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;

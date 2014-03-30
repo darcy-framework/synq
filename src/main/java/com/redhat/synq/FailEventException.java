@@ -17,18 +17,12 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.redhat.sync;
+package com.redhat.synq;
 
-public class EventWithThrowable<T> extends ForwardingEvent<T> implements HasThrowable {
-    private final Throwable exception;
+public class FailEventException extends RuntimeException {
+    private static final long serialVersionUID = -7740040718087166163L;
     
-    public EventWithThrowable(Event<? extends T> event, Throwable exception) {
-        super(event);
-        this.exception = exception;
-    }
-
-    @Override
-    public Throwable throwable() {
-        return exception;
+    public FailEventException(Event<?> cause) {
+        super(cause.toString());
     }
 }
