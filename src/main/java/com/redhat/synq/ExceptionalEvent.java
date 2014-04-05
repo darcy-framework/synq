@@ -23,8 +23,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * An event that, if triggered, will throw an exception instead of returning with the result of the
- * triggered event.
+ * Essentially the inverse behavior of a regular event. When triggered, will throw an exception
+ * instead of returning with the result of the triggered event. Additionally, no exception is thrown
+ * if the timeout is reached before the event is triggered. This means that
+ * {@link #waitUpTo(long, TimeUnit)} either throws an exception (whatever is associated with this
+ * event), or returns null after the timeout duration.
  * 
  * @author ahenning
  *
@@ -53,7 +56,7 @@ public class ExceptionalEvent<T> implements Event<T> {
         }
         
         if (!Thread.currentThread().isInterrupted()) {
-            // If we got here, then we got a result before the timeout. 
+            // If we got here, then we got a result before the timeout.
             throw new RuntimeException(throwable);
         }
         
