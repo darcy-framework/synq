@@ -282,7 +282,7 @@ public interface Event<T> {
         }
         
         public PollEvent<V> when(Condition<?> isMet) {
-            return original.failIf(isMet);
+            return original.failIf(new ConditionWithThrowable<Object>(isMet, throwable));
         }
         
         public PollEvent<V> when(Callable<?> returnsTrueOrNonNull) {
