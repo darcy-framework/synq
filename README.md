@@ -5,7 +5,7 @@ Synq is a small Java 8 library for syncing up a thread with some flexible config
 
 Java 8
 ======
-Lambda expressions and default methods in interfaces are core to maintaining readability and flexibility. If you are unfamiliar with lambda expressions in Java, [there are great tutorials][2].
+Java 8 features like lambda expressions and default methods in interfaces are core to maintaining readability and flexibility in Synq. If you are unfamiliar with lambda expressions in Java, [there are great tutorials][2]. You'll get a lot more out of the library if you're comfortable with lambdas.
 
 Example usage
 =============
