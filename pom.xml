@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <name>synq</name>
-    <url>https://github.com/rh-darcy/synq</url>
+    <url>https://github.com/darcy-framework/synq</url>
 
     <build>
         <plugins>
