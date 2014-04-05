@@ -23,11 +23,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Essentially the inverse behavior of a regular event. When triggered, will throw an exception
- * instead of returning with the result of the triggered event. Additionally, no exception is thrown
- * if the timeout is reached before the event is triggered. This means that
- * {@link #waitUpTo(long, TimeUnit)} either throws an exception (whatever is associated with this
- * event), or returns null after the timeout duration.
+ * Essentially transforms an event to its "inverse." When triggered, instead of returning with the
+ * original event's value, this will instead throw a specified exception. Additionally, these events
+ * never "time out" -- otherwise waiting for this event would always result in an exception. This
+ * means that {@link #waitUpTo(long, TimeUnit)} either throws an exception (whatever is associated
+ * with this event), or returns null after the timeout duration.
+ * <P>
+ * Use this for events which you don't want to happen in a given time interval.
  * 
  * @author ahenning
  *
@@ -62,5 +64,4 @@ public class ExceptionalEvent<T> implements Event<T> {
         
         return null;
     }
-    
 }
