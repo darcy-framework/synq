@@ -38,15 +38,18 @@ public interface Event<T> {
     /**
      * Perform some action before waiting. Will always run before waiting begins, unless after an
      * {@link #andThenExpect(Event)}, in which case the action will run, and the first set of events
-     * will be awaited. Once that set is satisfied, then any actions defined after an 
-     * {@link #andThenExpect(Event)} will run, likewise before that following set of conditions are 
+     * will be awaited. Once that set is satisfied, then any actions defined after an
+     * {@link #andThenExpect(Event)} will run, likewise before that following set of conditions are
      * awaited.
      * 
      * @param action
      * @return
      */
     default Event<T> after(Runnable action) {
-        return new SequentialEvent<>((t, u) -> {action.run(); return null;}, this);
+        return new SequentialEvent<>((t, u) -> {
+            action.run();
+            return null;
+        }, this);
     }
     
     /**
@@ -79,7 +82,7 @@ public interface Event<T> {
     
     default PollEvent<T> or(T item, Predicate<? super T> predicate) {
         return or(new Callable<T>() {
-
+            
             @Override
             public T call() throws Exception {
                 return item;
@@ -94,7 +97,7 @@ public interface Event<T> {
     
     default PollEvent<T> or(T item, Matcher<? super T> matcher) {
         return or(new Callable<T>() {
-
+            
             @Override
             public T call() throws Exception {
                 return item;
@@ -107,42 +110,48 @@ public interface Event<T> {
         return or(new HamcrestCondition<>(item, matcher));
     }
     
-    default ExceptionalEventFactory<T> throwing(Throwable throwable) {
-        return new ExceptionalEventFactory<T>(throwable, this);
+    default FailEventFactory<T> throwing(Throwable throwable) {
+        return new FailEventFactory<T>(throwable, this);
     }
     
     /**
      * If this event occurs before the others, then an exception will be thrown as defined by the
-     * event itself (via {@link #throwing(Throwable)}). If no exception is associated with the 
-     * event, a generic {@link FailEventException} will be thrown.
+     * Throwable parameter.
+     * 
+     * @param failEvent
+     * @param throwable
+     * @return
+     */
+    default Event<T> failIf(Event<?> failEvent, Throwable throwable) {
+        return new MultiEvent<T>(this, new FailEvent<T>(failEvent, throwable));
+    }
+    
+    /**
+     * Same as {@link #failIf(Event, Throwable)}, except a generic {@link FailEventException} will
+     * be thrown.
      * 
      * @param failEvent
      * @return
      */
     default Event<T> failIf(Event<?> failEvent) {
-        Throwable throwable;
-        
-        if (failEvent instanceof HasThrowable) {
-            throwable = ((HasThrowable) failEvent).throwable();
-        } else {
-            throwable = new FailEventException(failEvent);
-        }
-        
-        return new MultiEvent<T>(this, new ExceptionalEvent<T>(failEvent, throwable));
+        return failIf(failEvent, new FailEventException(failEvent));
     }
     
-    default PollEvent<T> failIf(Condition<?> failCondition) {
-        Throwable throwable;
+    default PollEvent<T> failIf(Condition<?> failCondition, Throwable throwable) {
         PollEvent<?> failEvent = failCondition.asEvent();
         
-        if (failCondition instanceof HasThrowable) {
-            throwable = ((HasThrowable) failCondition).throwable();
-        } else {
-            throwable = new FailEventException(failEvent);
-        }
-        
-        return new MultiEventWithPollEvent<T>(this, 
-                new ExceptionalPollEvent<T>(failEvent, throwable));
+        return new MultiEventWithPollEvent<T>(this, new FailPollEvent<T>(failEvent, throwable));
+    }
+    
+    /**
+     * Same as {@link #failIf(Condition, Throwable)}, except a generic {@link FailEventException}
+     * will be thrown.
+     * 
+     * @param failEvent
+     * @return
+     */
+    default PollEvent<T> failIf(Condition<?> failCondition) {
+        return failIf(failCondition, new FailEventException(failCondition));
     }
     
     default PollEvent<T> failIf(Callable<?> returnsTrueOrNonNull) {
@@ -151,7 +160,7 @@ public interface Event<T> {
     
     default <R> PollEvent<T> failIf(R item, Predicate<? super R> predicate) {
         return failIf(new Callable<R>() {
-
+            
             @Override
             public R call() throws Exception {
                 return item;
@@ -166,7 +175,7 @@ public interface Event<T> {
     
     default <R> PollEvent<T> failIf(R item, Matcher<? super R> matcher) {
         return failIf(new Callable<R>() {
-
+            
             @Override
             public R call() throws Exception {
                 return item;
@@ -182,7 +191,7 @@ public interface Event<T> {
     /**
      * Causes the previous actions to be run and events to be awaited before awaiting the next event
      * passed. If the next event goes on to define some action(s) to run before waiting, those will
-     * only run after the previous set of events is awaited (those that came before the 
+     * only run after the previous set of events is awaited (those that came before the
      * {@link #andThenExpect(Event)} call).
      * 
      * @param nextEvent
@@ -195,7 +204,7 @@ public interface Event<T> {
     /**
      * Causes the previous actions to be run and events to be awaited before awaiting the next event
      * passed. If the next event goes on to define some action(s) to run before waiting, those will
-     * only run after the previous set of events is awaited (those that came before the 
+     * only run after the previous set of events is awaited (those that came before the
      * {@link #andThenExpect(Condition)} call).
      * 
      * @param condition
@@ -222,7 +231,7 @@ public interface Event<T> {
      */
     default <U> PollEvent<U> andThenExpect(U item, Predicate<? super U> predicate) {
         return andThenExpect(new Callable<U>() {
-
+            
             @Override
             public U call() throws Exception {
                 return item;
@@ -249,7 +258,7 @@ public interface Event<T> {
      */
     default <U> PollEvent<U> andThenExpect(U item, Matcher<? super U> matcher) {
         return andThenExpect(new Callable<U>() {
-
+            
             @Override
             public U call() throws Exception {
                 return item;
@@ -268,21 +277,21 @@ public interface Event<T> {
         return andThenExpect(new HamcrestCondition<>(item, matcher));
     }
     
-    class ExceptionalEventFactory<V> {
+    class FailEventFactory<V> {
         private final Throwable throwable;
         private final Event<V> original;
         
-        ExceptionalEventFactory(Throwable throwable, Event<V> original) {
+        FailEventFactory(Throwable throwable, Event<V> original) {
             this.throwable = throwable;
             this.original = original;
         }
         
         public Event<V> when(Event<?> isTriggered) {
-            return original.failIf(new EventWithThrowable<Object>(isTriggered, throwable));
+            return original.failIf(isTriggered, throwable);
         }
         
         public PollEvent<V> when(Condition<?> isMet) {
-            return original.failIf(new ConditionWithThrowable<Object>(isMet, throwable));
+            return original.failIf(isMet, throwable);
         }
         
         public PollEvent<V> when(Callable<?> returnsTrueOrNonNull) {
@@ -291,7 +300,7 @@ public interface Event<T> {
         
         public <R> PollEvent<V> when(R item, Predicate<? super R> predicate) {
             return when(new Callable<R>() {
-
+                
                 @Override
                 public R call() throws Exception {
                     return item;
@@ -306,7 +315,7 @@ public interface Event<T> {
         
         public <R> PollEvent<V> when(R item, Matcher<? super R> matcher) {
             return when(new Callable<R>() {
-
+                
                 @Override
                 public R call() throws Exception {
                     return item;

@@ -35,11 +35,11 @@ import java.util.concurrent.TimeoutException;
  *
  * @param <T>
  */
-public class ExceptionalEvent<T> implements Event<T> {
+public class FailEvent<T> implements Event<T> {
     protected Event<?> original;
     private Throwable throwable;
     
-    public ExceptionalEvent(Event<?> original, Throwable throwable) {
+    public FailEvent(Event<?> original, Throwable throwable) {
         this.original = original;
         this.throwable = throwable;
     }

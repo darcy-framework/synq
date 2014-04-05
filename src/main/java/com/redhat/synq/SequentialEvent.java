@@ -57,37 +57,22 @@ public class SequentialEvent<T> implements Event<T> {
     }
     
     @Override
-    public ExceptionalEventFactory<T> throwing(Throwable throwable) {
-        return new ExceptionalEventFactory<T>(throwable, this);
+    public FailEventFactory<T> throwing(Throwable throwable) {
+        return new FailEventFactory<T>(throwable, this);
     }
     
     @Override
-    public Event<T> failIf(Event<?> failEvent) {
-        Throwable throwable;
-        
-        if (failEvent instanceof HasThrowable) {
-            throwable = ((HasThrowable) failEvent).throwable();
-        } else {
-            throwable = new FailEventException(failEvent);
-        }
-        
+    public Event<T> failIf(Event<?> failEvent, Throwable throwable) {
         return new SequentialEvent<>(original, 
-                new MultiEvent<T>(additional, new ExceptionalEvent<T>(failEvent, throwable)));
+                new MultiEvent<T>(additional, new FailEvent<T>(failEvent, throwable)));
     }
     
     @Override
-    public PollEvent<T> failIf(Condition<?> failCondition) {
-        Throwable throwable;
+    public PollEvent<T> failIf(Condition<?> failCondition, Throwable throwable) {
         PollEvent<?> failEvent = failCondition.asEvent();
-        
-        if (failCondition instanceof HasThrowable) {
-            throwable = ((HasThrowable) failCondition).throwable();
-        } else {
-            throwable = new FailEventException(failEvent);
-        }
         
         return new SequentialEventWithPollEvent<T>(original, 
                 new MultiEventWithPollEvent<T>(additional, 
-                        new ExceptionalPollEvent<T>(failEvent, throwable)));
+                        new FailPollEvent<T>(failEvent, throwable)));
     }
 }

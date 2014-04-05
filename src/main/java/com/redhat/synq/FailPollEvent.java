@@ -21,9 +21,9 @@ package com.redhat.synq;
 
 import java.util.concurrent.TimeUnit;
 
-public class ExceptionalPollEvent<T> extends ExceptionalEvent<T> implements PollEvent<T> {
+public class FailPollEvent<T> extends FailEvent<T> implements PollEvent<T> {
     
-    public ExceptionalPollEvent(PollEvent<?> original, Throwable throwable) {
+    public FailPollEvent(PollEvent<?> original, Throwable throwable) {
         super(original, throwable);
     }
 
