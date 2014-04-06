@@ -47,4 +47,10 @@ public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implement
         return this;
     }
     
+    @Override
+    public FailPollEvent<T> throwing(Throwable throwable) {
+        super.throwing(throwable);
+        
+        return this;
+    }
 }

@@ -32,5 +32,5 @@ package com.redhat.synq;
  * @see ForwardingFailEvent
  */
 public interface FailEvent<T> extends Event<T> {
-    FailEvent<T> withException(Throwable throwable);
+    FailEvent<T> throwing(Throwable throwable);
 }

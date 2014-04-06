@@ -27,8 +27,8 @@ public class MultiEventWithFailEvent<T> extends MultiEvent<T> implements FailEve
     
     @SuppressWarnings("unchecked")
     @Override
-    public FailEvent<T> withException(Throwable throwable) {
-        ((FailEvent<T>) additional).withException(throwable);
+    public FailEvent<T> throwing(Throwable throwable) {
+        ((FailEvent<T>) additional).throwing(throwable);
         
         return this;
     }

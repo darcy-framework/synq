@@ -63,7 +63,7 @@ public class ForwardingFailEvent<T> implements FailEvent<T> {
         return null;
     }
     
-    public ForwardingFailEvent<T> withException(Throwable throwable) {
+    public FailEvent<T> throwing(Throwable throwable) {
         this.throwable = throwable;
         
         return this;

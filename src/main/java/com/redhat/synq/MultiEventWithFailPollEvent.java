@@ -29,8 +29,8 @@ public class MultiEventWithFailPollEvent<T> extends MultiEventWithPollEvent<T> i
     
     @SuppressWarnings("unchecked")
     @Override
-    public FailPollEvent<T> withException(Throwable throwable) {
-        ((FailEvent<T>) additional).withException(throwable);
+    public FailPollEvent<T> throwing(Throwable throwable) {
+        ((FailEvent<T>) additional).throwing(throwable);
         
         return this;
     }

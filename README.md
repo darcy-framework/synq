@@ -27,7 +27,7 @@ public class AsyncCalculatorTest {
         
         // Throw an exception if some other condition is met first
         .failIf(calc::getResult, (result) -> result != null && result != 4)
-          .withException(new AssertionError("Learn to add!"))
+          .throwing(new AssertionError("Learn to add!"))
           
         // Wait for getResult to return 4 and return it. If getResult returns a
         // non-null and is not 4, throw an AssertionError. If 10 seconds passes
@@ -45,7 +45,7 @@ In other synchronization aids, waiting for something *not* to happen historicall
 ```java
 after(myObject::doSomething)
   .failIf(myObject::getSomeValue, (value) -> value == badValue)
-  .withException(new SomeException())
+  .throwing(new SomeException())
   .waitUpTo(10, SECONDS);
 ```
 

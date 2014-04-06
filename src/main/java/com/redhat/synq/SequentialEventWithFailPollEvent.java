@@ -41,8 +41,8 @@ public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> impl
     
     @SuppressWarnings("unchecked")
     @Override
-    public FailPollEvent<T> withException(Throwable throwable) {
-        ((FailEvent<T>) additional).withException(throwable);
+    public FailPollEvent<T> throwing(Throwable throwable) {
+        ((FailEvent<T>) additional).throwing(throwable);
         return this;
     }
     
