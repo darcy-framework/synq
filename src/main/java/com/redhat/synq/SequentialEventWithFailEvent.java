@@ -19,6 +19,18 @@
 
 package com.redhat.synq;
 
-public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
+public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implements FailEvent<T> {
+    
+    public SequentialEventWithFailEvent(Event<?> original, FailEvent<? extends T> additional) {
+        super(original, additional);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailEvent<T> withException(Throwable throwable) {
+        ((FailEvent<T>) additional).withException(throwable);
+        
+        return this;
+    }
     
 }

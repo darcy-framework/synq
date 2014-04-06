@@ -110,10 +110,6 @@ public interface Event<T> {
         return or(new HamcrestCondition<>(item, matcher));
     }
     
-    default FailEventFactory<T> throwing(Throwable throwable) {
-        return new FailEventFactory<T>(throwable, this);
-    }
-    
     /**
      * If this event occurs before the others, then an exception will be thrown as defined by the
      * Throwable parameter.
@@ -122,36 +118,14 @@ public interface Event<T> {
      * @param throwable
      * @return
      */
-    default Event<T> failIf(Event<?> failEvent, Throwable throwable) {
-        return new MultiEvent<T>(this, new FailEvent<T>(failEvent, throwable));
+    default FailEvent<T> failIf(Event<?> failEvent) {
+        return new MultiEventWithFailEvent<T>(this, new ForwardingFailEvent<T>(failEvent));
     }
     
-    /**
-     * Same as {@link #failIf(Event, Throwable)}, except a generic {@link FailEventException} will
-     * be thrown.
-     * 
-     * @param failEvent
-     * @return
-     */
-    default Event<T> failIf(Event<?> failEvent) {
-        return failIf(failEvent, new FailEventException(failEvent));
-    }
-    
-    default PollEvent<T> failIf(Condition<?> failCondition, Throwable throwable) {
+    default FailPollEvent<T> failIf(Condition<?> failCondition) {
         PollEvent<?> failEvent = failCondition.asEvent();
         
-        return new MultiEventWithPollEvent<T>(this, new FailPollEvent<T>(failEvent, throwable));
-    }
-    
-    /**
-     * Same as {@link #failIf(Condition, Throwable)}, except a generic {@link FailEventException}
-     * will be thrown.
-     * 
-     * @param failEvent
-     * @return
-     */
-    default PollEvent<T> failIf(Condition<?> failCondition) {
-        return failIf(failCondition, new FailEventException(failCondition));
+        return new MultiEventWithFailPollEvent<T>(this, new ForwardingFailPollEvent<T>(failEvent));
     }
     
     default PollEvent<T> failIf(Callable<?> returnsTrueOrNonNull) {
@@ -275,57 +249,5 @@ public interface Event<T> {
      */
     default <U> PollEvent<U> andThenExpect(Callable<U> item, Matcher<? super U> matcher) {
         return andThenExpect(new HamcrestCondition<>(item, matcher));
-    }
-    
-    class FailEventFactory<V> {
-        private final Throwable throwable;
-        private final Event<V> original;
-        
-        FailEventFactory(Throwable throwable, Event<V> original) {
-            this.throwable = throwable;
-            this.original = original;
-        }
-        
-        public Event<V> when(Event<?> isTriggered) {
-            return original.failIf(isTriggered, throwable);
-        }
-        
-        public PollEvent<V> when(Condition<?> isMet) {
-            return original.failIf(isMet, throwable);
-        }
-        
-        public PollEvent<V> when(Callable<?> returnsTrueOrNonNull) {
-            return when(HamcrestCondition.isTrueOrNonNull(returnsTrueOrNonNull));
-        }
-        
-        public <R> PollEvent<V> when(R item, Predicate<? super R> predicate) {
-            return when(new Callable<R>() {
-                
-                @Override
-                public R call() throws Exception {
-                    return item;
-                }
-                
-            }, predicate);
-        }
-        
-        public <R> PollEvent<V> when(Callable<R> item, Predicate<? super R> predicate) {
-            return when(Condition.match(item, predicate));
-        }
-        
-        public <R> PollEvent<V> when(R item, Matcher<? super R> matcher) {
-            return when(new Callable<R>() {
-                
-                @Override
-                public R call() throws Exception {
-                    return item;
-                }
-                
-            }, matcher);
-        }
-        
-        public <R> PollEvent<V> when(Callable<R> item, Matcher<? super R> matcher) {
-            return when(new HamcrestCondition<>(item, matcher));
-        }
     }
 }

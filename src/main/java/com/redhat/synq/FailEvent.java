@@ -19,49 +19,18 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 /**
- * Essentially transforms an event to its "inverse." When triggered, instead of returning with the
- * original event's value, this will instead throw a specified exception. Additionally, these events
- * never "time out" -- otherwise waiting for this event would always result in an exception. This
- * means that {@link #waitUpTo(long, TimeUnit)} either throws an exception (whatever is associated
- * with this event), or returns null after the timeout duration.
+ * Fail events should, instead of returning some value when they are triggered, throw an exception.
+ * When their timeout is reached, they should simply return null (as opposed to throwing a timeout
+ * exception). Fail events are kind of the "inverse" of regular events.
  * <P>
- * Use this for events which you don't want to happen in a given time interval.
+ * Useful for events which you don't want to happen in a given time interval.
  * 
  * @author ahenning
  *
  * @param <T>
+ * @see ForwardingFailEvent
  */
-public class FailEvent<T> implements Event<T> {
-    protected Event<?> original;
-    private Throwable throwable;
-    
-    public FailEvent(Event<?> original, Throwable throwable) {
-        this.original = original;
-        this.throwable = throwable;
-    }
-    
-    @Override
-    public T waitUpTo(long timeout, TimeUnit unit) {
-        try {
-            original.waitUpTo(timeout, unit);
-        } catch (Exception e) {
-            // TODO: When waitUpTo throws something different, update this
-            if (e.getCause() instanceof TimeoutException) {
-                return null;
-            } else {
-                throw e;
-            }
-        }
-        
-        if (!Thread.currentThread().isInterrupted()) {
-            // If we got here, then we got a result before the timeout.
-            throw new RuntimeException(throwable);
-        }
-        
-        return null;
-    }
+public interface FailEvent<T> extends Event<T> {
+    FailEvent<T> withException(Throwable throwable);
 }
