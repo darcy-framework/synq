@@ -3,11 +3,11 @@ synq
 
 Synq is a small Java 8 library for syncing up a thread with some flexible configuration of external event(s). 
 
-Java 8
+java 8
 ======
 Java 8 features like lambda expressions and default methods in interfaces are core to maintaining readability and flexibility in Synq. If you are unfamiliar with lambda expressions in Java, [there are great tutorials][2]. You'll get a lot more out of the library if you're comfortable with lambdas.
 
-Example usage
+example usage
 =============
 ```java
 import static com.redhat.synq.Synq.after;
@@ -40,7 +40,7 @@ public class AsyncCalculatorTest {
 }
 ```
 
-Example 2: Waiting for nothing
+example 2: waiting for nothing
 ==============================
 In other synchronization aids, waiting for something *not* to happen historically involves waiting for that something to happen, throwing an exception if it does, otherwise catching the timeout and ignoring it. In contrast, Synq handles this scenario elegantly:
 
@@ -54,7 +54,7 @@ No timeout exception will be thrown here, because we aren't expecting anything i
 
 As shown in the first example, if you want to control what exception is thrown if the event or condition is met before the time limit, you can use the ```throwing``` and subsequent ```when``` methods. Alternatively, you can pass an additional argument to ```failIf```: the throwable you'd want thrown.
 
-License
+license
 =======
 
 **synq** is licensed under [version 3 of the GPL][1].
