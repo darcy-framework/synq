@@ -49,7 +49,7 @@ public interface Condition<T> {
      * Converts this condition to an {@link Event} by polling at some default interval until the
      * condition is met, and then firing the event.
      * <P>
-     * Note that while polling is very flexible, it has significant reliability drawbacks when 
+     * Note that while polling is very flexible, it has significant reliability drawbacks when
      * compared to true event listeners.
      * 
      * @see {@link DefaultPollEvent}
@@ -60,7 +60,7 @@ public interface Condition<T> {
     }
     
     static <T> Condition<T> match(Callable<T> item, Predicate<? super T> predicate) {
-        return new Condition<T> () {
+        return new Condition<T>() {
             private T lastResult = null;
             
             @Override
@@ -68,12 +68,23 @@ public interface Condition<T> {
                 lastResult = item.call();
                 return predicate.test(lastResult);
             }
-
+            
             @Override
             public T lastResult() {
                 return lastResult;
             }
             
         };
+    }
+    
+    static <T> Condition<T> match(T item, Predicate<? super T> predicate) {
+        return match(new Callable<T>() {
+            
+            @Override
+            public T call() throws Exception {
+                return item;
+            }
+            
+        }, predicate);
     }
 }
