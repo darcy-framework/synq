@@ -128,11 +128,11 @@ public interface Event<T> {
         return new MultiEventWithFailPollEvent<T>(this, new ForwardingFailPollEvent<T>(failEvent));
     }
     
-    default PollEvent<T> failIf(Callable<?> returnsTrueOrNonNull) {
+    default FailPollEvent<T> failIf(Callable<?> returnsTrueOrNonNull) {
         return failIf(HamcrestCondition.isTrueOrNonNull(returnsTrueOrNonNull));
     }
     
-    default <R> PollEvent<T> failIf(R item, Predicate<? super R> predicate) {
+    default <R> FailPollEvent<T> failIf(R item, Predicate<? super R> predicate) {
         return failIf(new Callable<R>() {
             
             @Override
@@ -143,11 +143,11 @@ public interface Event<T> {
         }, predicate);
     }
     
-    default <R> PollEvent<T> failIf(Callable<R> item, Predicate<? super R> predicate) {
+    default <R> FailPollEvent<T> failIf(Callable<R> item, Predicate<? super R> predicate) {
         return failIf(Condition.match(item, predicate));
     }
     
-    default <R> PollEvent<T> failIf(R item, Matcher<? super R> matcher) {
+    default <R> FailPollEvent<T> failIf(R item, Matcher<? super R> matcher) {
         return failIf(new Callable<R>() {
             
             @Override
@@ -158,7 +158,7 @@ public interface Event<T> {
         }, matcher);
     }
     
-    default <R> PollEvent<T> failIf(Callable<R> item, Matcher<? super R> matcher) {
+    default <R> FailPollEvent<T> failIf(Callable<R> item, Matcher<? super R> matcher) {
         return failIf(new HamcrestCondition<>(item, matcher));
     }
     
