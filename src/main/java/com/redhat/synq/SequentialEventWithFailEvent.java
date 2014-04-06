@@ -27,6 +27,16 @@ public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implemen
     
     @SuppressWarnings("unchecked")
     @Override
+    public FailEvent<T> after(Runnable action) {
+        return new SequentialEventWithFailEvent<T>(original, 
+                new SequentialEventWithFailEvent<>((t, u) -> {
+                    action.run(); 
+                    return null;
+                }, (FailEvent<T>) additional));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
     public FailEvent<T> throwing(Throwable throwable) {
         ((FailEvent<T>) additional).throwing(throwable);
         

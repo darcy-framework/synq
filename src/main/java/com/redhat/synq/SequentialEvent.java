@@ -42,7 +42,10 @@ public class SequentialEvent<T> implements Event<T> {
     @Override
     public Event<T> after(Runnable action) {
         return new SequentialEvent<>(original, 
-                new SequentialEvent<>((t, u) -> {action.run(); return null;}, additional));
+                new SequentialEvent<>((t, u) -> {
+                    action.run();
+                    return null;
+                }, additional));
     }
     
     @Override

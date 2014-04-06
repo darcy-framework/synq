@@ -31,8 +31,10 @@ public class SequentialEventWithPollEvent<T> extends SequentialEvent<T> implemen
     @Override
     public PollEvent<T> after(Runnable action) {
         return new SequentialEventWithPollEvent<T>(original, 
-                new SequentialEventWithPollEvent<>((t, u) -> {action.run(); return null;}, 
-                        (PollEvent<T>) additional));
+                new SequentialEventWithPollEvent<>((t, u) -> {
+                    action.run();
+                    return null;
+                }, (PollEvent<T>) additional));
     }
 
     @SuppressWarnings("unchecked")

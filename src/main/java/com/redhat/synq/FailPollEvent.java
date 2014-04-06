@@ -22,4 +22,12 @@ package com.redhat.synq;
 public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
     @Override
     FailPollEvent<T> throwing(Throwable throwable);
+    
+    @Override
+    default FailPollEvent<T> after(Runnable action) {
+        return new SequentialEventWithFailPollEvent<>((t, u) -> {
+            action.run();
+            return null;
+        }, this);
+    }
 }
