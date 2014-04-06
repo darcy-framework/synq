@@ -19,8 +19,9 @@
 
 package com.redhat.synq;
 
-public class MultiEventWithFailPollEvent<T> extends MultiEventWithPollEvent<T> implements
-        FailPollEvent<T> {
+import java.util.concurrent.TimeUnit;
+
+public class MultiEventWithFailPollEvent<T> extends MultiEvent<T> implements FailPollEvent<T> {
     
     public MultiEventWithFailPollEvent(Event<? extends T> original,
             FailPollEvent<? extends T> additional) {
@@ -31,6 +32,22 @@ public class MultiEventWithFailPollEvent<T> extends MultiEventWithPollEvent<T> i
     @Override
     public FailPollEvent<T> throwing(Throwable throwable) {
         ((FailEvent<T>) additional).throwing(throwable);
+        
+        return this;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailPollEvent<T> pollingEvery(long pollingInterval, TimeUnit pollingUnit) {
+        ((FailPollEvent<T>) additional).pollingEvery(pollingInterval, pollingUnit);
+        
+        return this;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailPollEvent<T> ignoring(Class<? extends Exception> exception) {
+        ((FailPollEvent<T>) additional).ignoring(exception);
         
         return this;
     }
