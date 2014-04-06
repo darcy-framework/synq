@@ -26,10 +26,8 @@ public class AsyncCalculatorTest {
         .expect(calc::getResult, (result) -> result == 4)
         
         // Throw an exception if some other condition is met first
-        .throwing(new AssertionError("Learn to add!"))
-        
-          // This is that condition
-          .when(calc::getResult, (result) -> result != null && result != 4)
+        .failIf(calc::getResult, (result) -> result != null && result != 4)
+          .withException(new AssertionError("Learn to add!"))
           
         // Wait for getResult to return 4 and return it. If getResult returns a
         // non-null and is not 4, throw an AssertionError. If 10 seconds passes
@@ -47,12 +45,11 @@ In other synchronization aids, waiting for something *not* to happen historicall
 ```java
 after(myObject::doSomething)
   .failIf(myObject::getSomeValue, (value) -> value == badValue)
+  .withException(new SomeException())
   .waitUpTo(10, SECONDS);
 ```
 
 No timeout exception will be thrown here, because we aren't expecting anything in particular to happen. We only want to fail if something we don't want to happen, happens, and if that something doesn't happen within our timeout (10 seconds in this case), then we'll happily move along.
-
-As shown in the first example, if you want to control what exception is thrown if the event or condition is met before the time limit, you can use the ```throwing``` and subsequent ```when``` methods. Alternatively, you can pass an additional argument to ```failIf```: the throwable you'd want thrown.
 
 license
 =======
