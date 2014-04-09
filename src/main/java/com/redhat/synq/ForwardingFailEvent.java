@@ -19,6 +19,8 @@
 
 package com.redhat.synq;
 
+import static com.redhat.synq.ThrowableUtil.throwUnchecked;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -57,7 +59,7 @@ public class ForwardingFailEvent<T> implements FailEvent<T> {
         
         if (!Thread.currentThread().isInterrupted()) {
             // If we got here, then we got a result before the timeout.
-            throw new RuntimeException(throwable);
+            throwUnchecked(throwable);
         }
         
         return null;

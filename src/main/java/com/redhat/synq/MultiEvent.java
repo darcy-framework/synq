@@ -19,6 +19,8 @@
 
 package com.redhat.synq;
 
+import static com.redhat.synq.ThrowableUtil.throwUnchecked;
+
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -69,12 +71,12 @@ public class MultiEvent<T> implements Event<T> {
         
         if (timedOut) {
             // TODO: Make this better
-            throw new RuntimeException(new TimeoutException());
+            throwUnchecked(new TimeoutException());
         }
         
         if (throwable != null) {
             // TODO: Make this better
-            throw new RuntimeException(throwable);
+            throwUnchecked(throwable);
         }
         
         return firstResult;

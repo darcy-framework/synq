@@ -19,6 +19,8 @@
 
 package com.redhat.synq;
 
+import static com.redhat.synq.ThrowableUtil.throwUnchecked;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -47,7 +49,7 @@ public class EventListener<T> implements Event<T> {
         if (timedOut) {
             // TODO: Improve this
             // TODO: Remove event listener
-            throw new RuntimeException(new TimeoutException());
+            throwUnchecked(new TimeoutException());
         }
         
         return result;
