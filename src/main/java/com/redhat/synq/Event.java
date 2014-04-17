@@ -21,6 +21,8 @@ package com.redhat.synq;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.hamcrest.Matcher;
@@ -34,6 +36,41 @@ public interface Event<T> {
      * @return The result of the event.
      */
     T waitUpTo(long timeout, TimeUnit unit);
+    
+    default T waitWithRetries(long timeout, TimeUnit unit, int retries) {
+        return on(TimeoutException.class, EventCallbacks.retry(retries, timeout, unit))
+                .waitUpTo(timeout, unit);
+    }
+    
+    default <V extends Throwable> Event<T> on(Class<V> throwable, Function<Event<T>, T> callback) {
+        return (t, u) -> {
+            try {
+                return waitUpTo(t, u);
+            } catch (Throwable theThrowable) {
+                if (theThrowable.getClass().isAssignableFrom(throwable)) {
+                    return callback.apply(this);
+                }
+                
+                throw ThrowableUtil.throwUnchecked(theThrowable);
+            }
+        };
+    }
+    
+    @SuppressWarnings("unchecked")
+    default <V extends Throwable> Event<T> on(Class<V> throwable, 
+            BiFunction<Event<T>, ? super V, T> callback) {
+        return (t, u) -> {
+            try {
+                return waitUpTo(t, u);
+            } catch (Throwable theThrowable) {
+                if (theThrowable.getClass().isAssignableFrom(throwable)) {
+                    return callback.apply(this, (V) theThrowable);
+                }
+                
+                throw ThrowableUtil.throwUnchecked(theThrowable);
+            }
+        };
+    }
     
     /**
      * Perform some action before waiting. Will always run before waiting begins, unless after an
