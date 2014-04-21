@@ -19,13 +19,11 @@
 
 package com.redhat.synq;
 
-import static com.redhat.synq.ThrowableUtil.throwUnchecked;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class DefaultPollEvent<T> implements PollEvent<T> {
     private final Condition<T> condition;
@@ -72,8 +70,7 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
             }
             
             if (now() >= timeoutTime) {
-                // TODO: Improve these exceptions
-                throwUnchecked(new TimeoutException());
+                throw new TimeoutException(this);
             }
             
             try {

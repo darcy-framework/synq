@@ -22,7 +22,6 @@ package com.redhat.synq;
 import static com.redhat.synq.ThrowableUtil.throwUnchecked;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Essentially transforms an event to its "inverse." See {@link FailEvent} javadoc.
@@ -48,17 +47,15 @@ public class ForwardingFailEvent<T> implements FailEvent<T> {
     public T waitUpTo(long timeout, TimeUnit unit) {
         try {
             original.waitUpTo(timeout, unit);
-        } catch (Exception e) {
-            // TODO: When waitUpTo throws something different, update this
-            if (e.getCause() instanceof TimeoutException) {
-                return null;
-            } else {
-                throw e;
-            }
+        } catch (TimeoutException e) {
+            // If a fail event times out, this is okay -- it means nothing "failed" in the given 
+            // time, which is what we would like to see.
+            return null;
         }
         
         if (!Thread.currentThread().isInterrupted()) {
-            // If we got here, then we got a result before the timeout.
+            // If we got here, then we got a result before the timeout. For a fail event, this is
+            // the condition to throw the associated exception.
             throwUnchecked(throwable);
         }
         

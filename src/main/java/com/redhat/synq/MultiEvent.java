@@ -24,7 +24,6 @@ import static com.redhat.synq.ThrowableUtil.throwUnchecked;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class MultiEvent<T> implements Event<T> {
     private final Event<? extends T> original;
@@ -70,8 +69,7 @@ public class MultiEvent<T> implements Event<T> {
         additionalAwaiter.interrupt();
         
         if (timedOut) {
-            // TODO: Make this better
-            throwUnchecked(new TimeoutException());
+            throw new TimeoutException(this);
         }
         
         if (throwable != null) {
