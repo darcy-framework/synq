@@ -29,7 +29,7 @@ public class AsyncCalculatorTest {
         .failIf(calc::getResult, (result) -> result != null && result != 4)
           .throwing(new AssertionError("Learn to add!"))
               
-        // Now call the function defined in after, Wait for getResult to return 
+        // Now call the function defined in after, wait for getResult to return 
         // 4 and return it. If getResult returns a/ non-null and is not 4, throw
         // an AssertionError. If 10 seconds passes before getResult returns 
         // non-null, throw a TimeoutException.
