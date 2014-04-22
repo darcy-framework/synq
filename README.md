@@ -17,21 +17,22 @@ public class AsyncCalculatorTest {
   private Calculator calc = new AsyncCalculator();
 
   public void asyncAddTest() {
-    // Start defining the condition with a after(). This accepts a functional
+    // Start defining the condition with an after(). This accepts a functional
     // interface that will be called before we start waiting for the expected
     // conditions.
     int result = after(() -> calc.add(2, 2)) 
-    
+        
         // What do we want to wait to be true after we call the above function?
         .expect(calc::getResult, (result) -> result == 4)
-        
+            
         // Throw an exception if some other condition is met first
         .failIf(calc::getResult, (result) -> result != null && result != 4)
           .throwing(new AssertionError("Learn to add!"))
-          
-        // Wait for getResult to return 4 and return it. If getResult returns a
-        // non-null and is not 4, throw an AssertionError. If 10 seconds passes
-        // before getResult returns non-null, throw a TimeoutException.
+              
+        // Now call the function defined in after, Wait for getResult to return 
+        // 4 and return it. If getResult returns a/ non-null and is not 4, throw
+        // an AssertionError. If 10 seconds passes before getResult returns 
+        // non-null, throw a TimeoutException.
         .waitUpTo(10, SECONDS);
   }
 
