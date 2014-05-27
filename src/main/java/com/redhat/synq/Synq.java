@@ -26,8 +26,6 @@ import org.hamcrest.Matcher;
 
 /**
  * Helper class that with static factories for default ConfigurableWait implementations.
- * @author ahenning
- *
  */
 public final class Synq {
     private Synq() {}
@@ -122,7 +120,7 @@ public final class Synq {
     }
     
     /**
-     * Static factory for a WaitFactory that runs something just before waiting.
+     * Static factory for an {@link Event} that runs something just before waiting.
      * 
      * @param runnable
      * @return

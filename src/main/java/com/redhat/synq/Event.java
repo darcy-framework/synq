@@ -25,6 +25,12 @@ import java.util.function.Predicate;
 
 import org.hamcrest.Matcher;
 
+/**
+ * An Event represents something that may happen in the future, and can be awaited. Awaiting that 
+ * Event (via {@link #waitUpTo(long, TimeUnit)}) returns some result associated with the Event
+ * you were waiting for.
+ * @param <T> The type of the result of this Event.
+ */
 public interface Event<T> {
     /**
      * Block the thread until the event has occurred.
