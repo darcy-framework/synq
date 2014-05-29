@@ -32,11 +32,15 @@ public class SequentialEvent<T> implements Event<T> {
     
     @Override
     public T waitUpTo(long timeout, TimeUnit unit) {
-        // TODO: This waits for up to timeout x2 total... is this appropriate?
-        
+        long startTimeMillis = now();
+
         original.waitUpTo(timeout, unit);
+
+        long timePassedMillis = now() - startTimeMillis;
         
-        return additional.waitUpTo(timeout, unit);
+        return additional.waitUpTo(
+                TimeUnit.MILLISECONDS.convert(timeout, unit) - timePassedMillis,
+                TimeUnit.MILLISECONDS);
     }
     
     @Override
@@ -72,5 +76,9 @@ public class SequentialEvent<T> implements Event<T> {
         return new SequentialEventWithFailPollEvent<T>(original, 
                 new MultiEventWithFailPollEvent<T>(additional, 
                         new ForwardingFailPollEvent<T>(failEvent)));
+    }
+
+    private long now() {
+        return System.currentTimeMillis();
     }
 }
