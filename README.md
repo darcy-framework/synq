@@ -23,10 +23,10 @@ public class AsyncCalculatorTest {
     int result = after(() -> calc.add(2, 2)) 
         
         // What do we want to wait to be true after we call the above function?
-        .expect(calc::getResult, (result) -> result == 4)
+        .expect(calc::getResult, result -> result == 4)
             
         // Throw an exception if some other condition is met first
-        .failIf(calc::getResult, (result) -> result != null && result != 4)
+        .failIf(calc::getResult, result -> result != null && result != 4)
           .throwing(new AssertionError("Learn to add!"))
               
         // Now call the function defined in after, wait for getResult to return 
@@ -45,7 +45,7 @@ In other synchronization aids, waiting for something *not* to happen historicall
 
 ```java
 after(myObject::doSomething)
-  .failIf(myObject::getSomeValue, (value) -> value == badValue)
+  .failIf(myObject::getSomeValue, value -> value == badValue)
   .throwing(new SomeException())
   .waitUpTo(10, SECONDS);
 ```
