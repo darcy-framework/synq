@@ -12,7 +12,8 @@ example usage
 =============
 ```java
 import static com.redhat.synq.Synq.after;
-import static java.util.concurrent.TimeUnit.SECONDS;
+// New Java 8 time API
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class AsyncCalculatorTest {
   private Calculator calc = new AsyncCalculator();
