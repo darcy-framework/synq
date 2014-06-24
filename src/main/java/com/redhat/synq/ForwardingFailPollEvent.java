@@ -19,7 +19,7 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implements FailPollEvent<T> {
     
@@ -33,8 +33,8 @@ public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implement
 
     @SuppressWarnings("unchecked")
     @Override
-    public PollEvent<T> pollingEvery(long pollingInterval, TimeUnit pollingUnit) {
-        ((PollEvent<T>) original).pollingEvery(pollingInterval, pollingUnit);
+    public PollEvent<T> pollingEvery(Duration pollingInterval) {
+        ((PollEvent<T>) original).pollingEvery(pollingInterval);
         
         return this;
     }

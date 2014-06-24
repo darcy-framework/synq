@@ -19,7 +19,8 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.time.Instant;
 
 public class SequentialEvent<T> implements Event<T> {
     protected final Event<?> original;
@@ -31,22 +32,24 @@ public class SequentialEvent<T> implements Event<T> {
     }
     
     @Override
-    public T waitUpTo(long timeout, TimeUnit unit) {
-        long startTimeMillis = now();
+    public T waitUpTo(Duration duration) {
+        Instant start = Instant.now();
 
-        original.waitUpTo(timeout, unit);
+        try {
+            original.waitUpTo(duration);
 
-        long timePassedMillis = now() - startTimeMillis;
-        
-        return additional.waitUpTo(
-                TimeUnit.MILLISECONDS.convert(timeout, unit) - timePassedMillis,
-                TimeUnit.MILLISECONDS);
+            Duration remaining = duration.minus(Duration.between(start, Instant.now()));
+
+            return additional.waitUpTo(remaining);
+        } catch (TimeoutException t) {
+            throw new TimeoutException(this, duration);
+        }
     }
     
     @Override
     public Event<T> after(Runnable action) {
         return new SequentialEvent<>(original, 
-                new SequentialEvent<>((t, u) -> {
+                new SequentialEvent<>(d -> {
                     action.run();
                     return null;
                 }, additional));

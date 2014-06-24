@@ -19,7 +19,7 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public class MultiEventWithPollEvent<T> extends MultiEvent<T> implements PollEvent<T> {
     
@@ -29,8 +29,8 @@ public class MultiEventWithPollEvent<T> extends MultiEvent<T> implements PollEve
 
     @SuppressWarnings("unchecked")
     @Override
-    public PollEvent<T> pollingEvery(long pollingInterval, TimeUnit pollingUnit) {
-        ((PollEvent<T>) additional).pollingEvery(pollingInterval, pollingUnit);
+    public PollEvent<T> pollingEvery(Duration pollingInterval) {
+        ((PollEvent<T>) additional).pollingEvery(pollingInterval);
         
         return this;
     }

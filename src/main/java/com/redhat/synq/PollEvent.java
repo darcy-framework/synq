@@ -19,15 +19,21 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 public interface PollEvent<T> extends Event<T> {
-    PollEvent<T> pollingEvery(long pollingInterval, TimeUnit pollingUnit);
+    default PollEvent<T> pollingEvery(long amount, ChronoUnit unit) {
+        return pollingEvery(Duration.of(amount, unit));
+    }
+
+    PollEvent<T> pollingEvery(Duration pollingInterval);
+
     PollEvent<T> ignoring(Class<? extends Exception> exception);
     
     @Override
     default PollEvent<T> after(Runnable action) {
-        return new SequentialEventWithPollEvent<>((t, u) -> {action.run(); return null;}, this);
+        return new SequentialEventWithPollEvent<>(d -> {action.run(); return null;}, this);
     }
     
 }

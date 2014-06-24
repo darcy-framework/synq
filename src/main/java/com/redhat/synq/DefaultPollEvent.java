@@ -19,25 +19,25 @@
 
 package com.redhat.synq;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 public class DefaultPollEvent<T> implements PollEvent<T> {
+    private static final Duration DEFAULT_POLLING_INTERVAL = Duration.ofSeconds(1);
+
     private final Condition<T> condition;
-    private long pollingInterval = 1;
-    private TimeUnit pollingUnit = TimeUnit.SECONDS;
+
+    private Duration pollingInterval = DEFAULT_POLLING_INTERVAL;
     private Set<Class<? extends Exception>> ignoredExceptions = new HashSet<>();
     
     public DefaultPollEvent(Condition<T> condition) {
         this.condition = condition;
     }
     
-    public DefaultPollEvent<T> pollingEvery(long pollingInterval, TimeUnit pollingUnit) {
+    public DefaultPollEvent<T> pollingEvery(Duration pollingInterval) {
         this.pollingInterval = pollingInterval;
-        this.pollingUnit = pollingUnit;
         
         return this;
     }
@@ -48,10 +48,10 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
     }
     
     @Override
-    public T waitUpTo(long timeout, TimeUnit unit) {
+    public T waitUpTo(Duration duration) {
         boolean met = false;
         T lastResult = null;
-        long timeoutTime = now() + MILLISECONDS.convert(timeout, unit);
+        Instant timeoutTime = Instant.now().plus(duration);
         
         while (!met) {
             try {
@@ -69,12 +69,12 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
                 return null;
             }
             
-            if (now() >= timeoutTime) {
-                throw new TimeoutException(this);
+            if (timeoutTime.isAfter(Instant.now())) {
+                throw new TimeoutException(this, duration);
             }
             
             try {
-                Thread.sleep(MILLISECONDS.convert(pollingInterval, pollingUnit));
+                Thread.sleep(pollingInterval.toMillis());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return null;

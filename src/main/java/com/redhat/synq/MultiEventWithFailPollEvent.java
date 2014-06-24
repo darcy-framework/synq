@@ -19,7 +19,7 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public class MultiEventWithFailPollEvent<T> extends MultiEvent<T> implements FailPollEvent<T> {
     
@@ -38,8 +38,8 @@ public class MultiEventWithFailPollEvent<T> extends MultiEvent<T> implements Fai
     
     @SuppressWarnings("unchecked")
     @Override
-    public FailPollEvent<T> pollingEvery(long pollingInterval, TimeUnit pollingUnit) {
-        ((FailPollEvent<T>) additional).pollingEvery(pollingInterval, pollingUnit);
+    public FailPollEvent<T> pollingEvery(Duration pollingInterval) {
+        ((FailPollEvent<T>) additional).pollingEvery(pollingInterval);
         
         return this;
     }

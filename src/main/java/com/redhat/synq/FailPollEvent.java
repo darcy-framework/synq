@@ -25,7 +25,7 @@ public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
     
     @Override
     default FailPollEvent<T> after(Runnable action) {
-        return new SequentialEventWithFailPollEvent<>((t, u) -> {
+        return new SequentialEventWithFailPollEvent<>(d -> {
             action.run();
             return null;
         }, this);

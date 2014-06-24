@@ -21,7 +21,7 @@ package com.redhat.synq;
 
 import static com.redhat.synq.ThrowableUtil.throwUnchecked;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 /**
  * Essentially transforms an event to its "inverse." See {@link FailEvent} javadoc.
@@ -44,9 +44,9 @@ public class ForwardingFailEvent<T> implements FailEvent<T> {
     }
     
     @Override
-    public T waitUpTo(long timeout, TimeUnit unit) {
+    public T waitUpTo(Duration duration) {
         try {
-            original.waitUpTo(timeout, unit);
+            original.waitUpTo(duration);
         } catch (TimeoutException e) {
             // If a fail event times out, this is okay -- it means nothing "failed" in the given 
             // time, which is what we would like to see.

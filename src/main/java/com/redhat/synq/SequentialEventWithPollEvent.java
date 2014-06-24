@@ -19,7 +19,7 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public class SequentialEventWithPollEvent<T> extends SequentialEvent<T> implements PollEvent<T> {
     
@@ -31,7 +31,7 @@ public class SequentialEventWithPollEvent<T> extends SequentialEvent<T> implemen
     @Override
     public PollEvent<T> after(Runnable action) {
         return new SequentialEventWithPollEvent<T>(original, 
-                new SequentialEventWithPollEvent<>((t, u) -> {
+                new SequentialEventWithPollEvent<>(d -> {
                     action.run();
                     return null;
                 }, (PollEvent<T>) additional));
@@ -39,8 +39,8 @@ public class SequentialEventWithPollEvent<T> extends SequentialEvent<T> implemen
 
     @SuppressWarnings("unchecked")
     @Override
-    public PollEvent<T> pollingEvery(long pollingInterval, TimeUnit pollingUnit) {
-        ((PollEvent<T>) additional).pollingEvery(pollingInterval, pollingUnit);
+    public PollEvent<T> pollingEvery(Duration pollingInterval) {
+        ((PollEvent<T>) additional).pollingEvery(pollingInterval);
         
         return this;
     }

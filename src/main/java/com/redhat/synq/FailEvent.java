@@ -36,7 +36,7 @@ public interface FailEvent<T> extends Event<T> {
     
     @Override
     default FailEvent<T> after(Runnable action) {
-        return new SequentialEventWithFailEvent<>((t, u) -> {
+        return new SequentialEventWithFailEvent<>(d -> {
             action.run();
             return null;
         }, this);

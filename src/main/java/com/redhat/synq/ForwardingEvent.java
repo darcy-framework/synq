@@ -19,7 +19,7 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public class ForwardingEvent<T> implements Event<T> {
     private final Event<? extends T> event;
@@ -29,7 +29,7 @@ public class ForwardingEvent<T> implements Event<T> {
     }
 
     @Override
-    public T waitUpTo(long timeout, TimeUnit unit) {
-        return event.waitUpTo(timeout, unit);
+    public T waitUpTo(Duration duration) {
+        return event.waitUpTo(duration);
     }
 }

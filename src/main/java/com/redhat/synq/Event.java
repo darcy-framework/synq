@@ -19,15 +19,16 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-
 import org.hamcrest.Matcher;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 
 /**
  * An Event represents something that may happen in the future, and can be awaited. Awaiting that 
- * Event (via {@link #waitUpTo(long, TimeUnit)}) returns some result associated with the Event
+ * Event (via {@link #waitUpTo(long, ChronoUnit)}) returns some result associated with the Event
  * you were waiting for.
  * @param <T> The type of the result of this Event.
  */
@@ -39,7 +40,11 @@ public interface Event<T> {
      * @param unit
      * @return The result of the event.
      */
-    T waitUpTo(long timeout, TimeUnit unit);
+    default T waitUpTo(long timeout, ChronoUnit unit) {
+        return waitUpTo(Duration.of(timeout, unit));
+    }
+
+    T waitUpTo(Duration duration);
     
     /**
      * Perform some action before waiting. Will always run before waiting begins, unless after an
@@ -52,7 +57,7 @@ public interface Event<T> {
      * @return
      */
     default Event<T> after(Runnable action) {
-        return new SequentialEvent<>((t, u) -> {
+        return new SequentialEvent<>(d -> {
             action.run();
             return null;
         }, this);

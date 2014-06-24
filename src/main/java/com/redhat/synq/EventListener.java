@@ -19,8 +19,10 @@
 
 package com.redhat.synq;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class EventListener<T> implements Event<T> {
     private CountDownLatch latch = new CountDownLatch(1);
@@ -32,11 +34,11 @@ public class EventListener<T> implements Event<T> {
     }
     
     @Override
-    public T waitUpTo(long timeout, TimeUnit unit) {
+    public T waitUpTo(Duration duration) {
         boolean timedOut;
         
         try {
-            timedOut = !latch.await(timeout, unit);
+            timedOut = !latch.await(duration.toMillis(), MILLISECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             // TODO: Remove event listener
@@ -44,7 +46,7 @@ public class EventListener<T> implements Event<T> {
         }
         
         if (timedOut) {
-            throw new TimeoutException(this);
+            throw new TimeoutException(this, duration);
         }
         
         return result;

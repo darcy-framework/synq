@@ -20,10 +20,11 @@
 package com.redhat.synq;
 
 import static com.redhat.synq.ThrowableUtil.throwUnchecked;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class MultiEvent<T> implements Event<T> {
     private final Event<? extends T> original;
@@ -33,73 +34,68 @@ public class MultiEvent<T> implements Event<T> {
     private UncaughtExceptionHandler exceptionHandler = new MultiEventExceptionHandler();
     private CountDownLatch latch = new CountDownLatch(1);
     private boolean timedOut = false;
-    
+
     public MultiEvent(Event<? extends T> original, Event<? extends T> additional) {
         this.original = original;
         this.additional = additional;
     }
-    
+
     @Override
-    public T waitUpTo(long timeout, TimeUnit unit) {
-        Thread originalAwaiter = new Thread(() -> {
-            finishWithResult(original.waitUpTo(timeout, unit));
-        });
-        
-        Thread additionalAwaiter = new Thread(() -> {
-            finishWithResult(additional.waitUpTo(timeout, unit));
-        });
-        
-        originalAwaiter.setUncaughtExceptionHandler(exceptionHandler);
-        additionalAwaiter.setUncaughtExceptionHandler(exceptionHandler);
-        
-        originalAwaiter.start();
-        additionalAwaiter.start();
-        
+    public T waitUpTo(Duration duration) {
+        Thread originalWaiter = new Thread(() -> finishWithResult(original.waitUpTo(duration)));
+        Thread additionalWaiter = new Thread(() -> finishWithResult(additional.waitUpTo(duration)));
+
+        originalWaiter.setUncaughtExceptionHandler(exceptionHandler);
+        additionalWaiter.setUncaughtExceptionHandler(exceptionHandler);
+
+        originalWaiter.start();
+        additionalWaiter.start();
+
         timedOut = false;
-        
+
         try {
-            timedOut = !latch.await(timeout, unit);
+            timedOut = !latch.await(duration.toMillis(), MILLISECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return null;
         }
-        
+
         // We don't know which finished first so interrupt them both; it's harmless.
-        originalAwaiter.interrupt();
-        additionalAwaiter.interrupt();
-        
+        originalWaiter.interrupt();
+        additionalWaiter.interrupt();
+
         if (timedOut) {
-            throw new TimeoutException(this);
+            throw new TimeoutException(this, duration);
         }
-        
+
         if (throwable != null) {
             // TODO: Make this better
             throwUnchecked(throwable);
         }
-        
+
         return firstResult;
     }
-    
+
     private synchronized void finishWithResult(T result) {
         if (firstResult == null) {
             firstResult = result;
             latch.countDown();
         }
     }
-    
+
     private synchronized void finishWithException(Throwable t) {
         if (throwable == null) {
             throwable = t;
             latch.countDown();
         }
     }
-    
+
     private class MultiEventExceptionHandler implements UncaughtExceptionHandler {
 
         @Override
         public void uncaughtException(Thread t, Throwable e) {
             finishWithException(e);
         }
-        
+
     }
 }

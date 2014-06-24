@@ -19,7 +19,7 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> implements
         FailPollEvent<T> {
@@ -33,7 +33,7 @@ public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> impl
     @Override
     public FailPollEvent<T> after(Runnable action) {
         return new SequentialEventWithFailPollEvent<T>(original,
-                new SequentialEventWithFailPollEvent<>((t, u) -> {
+                new SequentialEventWithFailPollEvent<>(d -> {
                     action.run();
                     return null;
                 }, (FailPollEvent<T>) additional));
@@ -48,8 +48,8 @@ public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> impl
     
     @SuppressWarnings("unchecked")
     @Override
-    public FailPollEvent<T> pollingEvery(long pollingInterval, TimeUnit pollingUnit) {
-        ((PollEvent<T>) additional).pollingEvery(pollingInterval, pollingUnit);
+    public FailPollEvent<T> pollingEvery(Duration pollingInterval) {
+        ((PollEvent<T>) additional).pollingEvery(pollingInterval);
         
         return this;
     }

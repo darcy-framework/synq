@@ -29,7 +29,7 @@ public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implemen
     @Override
     public FailEvent<T> after(Runnable action) {
         return new SequentialEventWithFailEvent<T>(original, 
-                new SequentialEventWithFailEvent<>((t, u) -> {
+                new SequentialEventWithFailEvent<>(d -> {
                     action.run(); 
                     return null;
                 }, (FailEvent<T>) additional));

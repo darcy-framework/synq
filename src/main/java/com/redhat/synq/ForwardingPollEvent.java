@@ -1,6 +1,6 @@
 package com.redhat.synq;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public class ForwardingPollEvent<T> implements PollEvent<T> {
     private final PollEvent<T> event;
@@ -10,13 +10,13 @@ public class ForwardingPollEvent<T> implements PollEvent<T> {
     }
     
     @Override
-    public T waitUpTo(long timeout, TimeUnit unit) {
-        return event.waitUpTo(timeout, unit);
+    public T waitUpTo(Duration duration) {
+        return event.waitUpTo(duration);
     }
     
     @Override
-    public PollEvent<T> pollingEvery(long pollingInterval, TimeUnit pollingUnit) {
-        return event.pollingEvery(pollingInterval, pollingUnit);
+    public PollEvent<T> pollingEvery(Duration pollingInterval) {
+        return event.pollingEvery(pollingInterval);
     }
     
     @Override
