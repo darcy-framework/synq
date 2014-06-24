@@ -69,7 +69,7 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
                 return null;
             }
             
-            if (timeoutTime.isAfter(Instant.now())) {
+            if (Instant.now().isAfter(timeoutTime)) {
                 throw new TimeoutException(this, duration);
             }
             
