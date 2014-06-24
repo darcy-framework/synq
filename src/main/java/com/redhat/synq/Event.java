@@ -27,34 +27,66 @@ import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
 /**
- * An Event represents something that may happen in the future, and can be awaited. Awaiting that 
- * Event (via {@link #waitUpTo(long, ChronoUnit)}) returns some result associated with the Event
- * you were waiting for.
+ * An Event represents something that may happen in the future, and can be awaited. Awaiting that
+ * Event (via {@link #waitUpTo(Duration)}) returns some result associated with the Event you were
+ * waiting for.
+ *
+ * <p>Events only have one abstract method, {@link #waitUpTo(java.time.Duration)}, but they have
+ * several default methods for taking an existing an event and composing another from it.
+ *
+ * <p>Many of the default methods are simply overrides of others for convenient syntax. Here are the
+ * core default methods:
+ *
+ * <ul>
+ *     <li>{@link #after(Runnable)} - When this Event is awaited, it will first run the action.</li>
+ *     <li>{@link #failIf(Event)} - While waiting for the original event, throw an exception if
+ *     this other event occurs first.</li>
+ *     <li>{@link #or(Event)} - Returns an Event that will trigger when either of these Events
+ *     occurs, returning the value associated with whichever happened first.</li>
+ *     <li>{@link #andThenExpect(Event)} - Returns an Event that will wait for the the original,
+ *     then wait for the second, in that order.</li>
+ * </ul>
+ *
  * @param <T> The type of the result of this Event.
  */
+@FunctionalInterface
 public interface Event<T> {
     /**
-     * Block the thread until the event has occurred.
-     * 
-     * @param timeout
-     * @param unit
-     * @return The result of the event.
+     * Block the thread until the event has occurred. Will block the thread for a maximum of the
+     * specified duration, at which point a {@link com.redhat.synq.TimeoutException} will be
+     * thrown.
+     *
+     * @return The "result" of the event, which varies per implementation. If there is some value
+     * that is being examined, generally when the value meets the expected criteria it is that value
+     * that should be returned.
+     * @throws com.redhat.synq.TimeoutException if the specified amount of time passes before the
+     * Event occurs.
+     */
+    T waitUpTo(Duration duration);
+
+    // Default methods
+
+    /**
+     * Block the thread until the event has occurred. Will block the thread for a maximum of the
+     * specified duration, at which point a {@link com.redhat.synq.TimeoutException} will be
+     * thrown.
+     *
+     * @return The "result" of the event, which varies per implementation. If there is some value
+     * that is being examined, generally when the value meets the expected criteria it is that value
+     * that should be returned.
+     * @throws com.redhat.synq.TimeoutException if the specified amount of time passes before the
+     * Event occurs.
      */
     default T waitUpTo(long timeout, ChronoUnit unit) {
         return waitUpTo(Duration.of(timeout, unit));
     }
 
-    T waitUpTo(Duration duration);
-    
     /**
      * Perform some action before waiting. Will always run before waiting begins, unless after an
      * {@link #andThenExpect(Event)}, in which case the action will run, and the first set of events
-     * will be awaited. Once that set is satisfied, then any actions defined after an
-     * {@link #andThenExpect(Event)} will run, likewise before that following set of conditions are
+     * will be awaited. Once that set is satisfied, then any actions defined after an {@link
+     * #andThenExpect(Event)} will run, likewise before that following set of conditions are
      * awaited.
-     * 
-     * @param action
-     * @return
      */
     default Event<T> after(Runnable action) {
         return new SequentialEvent<>(d -> {
@@ -62,201 +94,172 @@ public interface Event<T> {
             return null;
         }, this);
     }
-    
+
     /**
      * Compose a new event that will wait until the first of two events: the original or the event
      * passed.
-     * 
-     * @param event
-     * @return
      */
     default Event<T> or(Event<? extends T> event) {
         return new MultiEvent<T>(this, event);
     }
-    
+
     /**
      * Compose a new event that will wait until the first of two events: the original or the event
      * passed.
-     * 
-     * @param condition
-     *            Converted to a {@link PollEvent} by polling at some regular interval (which you
-     *            can specify fluently, or trust the defaults).
-     * @return
+     *
+     * @param condition Converted to a {@link PollEvent} by polling at some regular interval (which
+     * you can specify fluently, or trust the defaults).
      */
     default PollEvent<T> or(Condition<? extends T> condition) {
         return new MultiEventWithPollEvent<T>(this, condition.asEvent());
     }
-    
+
     default PollEvent<T> or(Callable<? extends T> returnsTrueOrNonNull) {
         return or(HamcrestCondition.isTrueOrNonNull(returnsTrueOrNonNull));
     }
-    
+
     default PollEvent<T> or(T item, Predicate<? super T> predicate) {
         return or(new Callable<T>() {
-            
+
             @Override
             public T call() throws Exception {
                 return item;
             }
-            
+
         }, predicate);
     }
-    
+
     default PollEvent<T> or(Callable<T> item, Predicate<? super T> predicate) {
         return or(Condition.match(item, predicate));
     }
-    
+
     default PollEvent<T> or(T item, Matcher<? super T> matcher) {
         return or(new Callable<T>() {
-            
+
             @Override
             public T call() throws Exception {
                 return item;
             }
-            
+
         }, matcher);
     }
-    
+
     default PollEvent<T> or(Callable<T> item, Matcher<? super T> matcher) {
         return or(new HamcrestCondition<>(item, matcher));
     }
-    
+
     /**
      * If this event occurs before the others, then an exception will be thrown as defined by the
      * Throwable parameter.
-     * 
-     * @param failEvent
-     * @param throwable
-     * @return
      */
     default FailEvent<T> failIf(Event<?> failEvent) {
         return new MultiEventWithFailEvent<T>(this, new ForwardingFailEvent<T>(failEvent));
     }
-    
+
     default FailPollEvent<T> failIf(Condition<?> failCondition) {
         PollEvent<?> failEvent = failCondition.asEvent();
-        
+
         return new MultiEventWithFailPollEvent<T>(this, new ForwardingFailPollEvent<T>(failEvent));
     }
-    
+
     default FailPollEvent<T> failIf(Callable<?> returnsTrueOrNonNull) {
         return failIf(HamcrestCondition.isTrueOrNonNull(returnsTrueOrNonNull));
     }
-    
+
     default <R> FailPollEvent<T> failIf(R item, Predicate<? super R> predicate) {
         return failIf(new Callable<R>() {
-            
+
             @Override
             public R call() throws Exception {
                 return item;
             }
-            
+
         }, predicate);
     }
-    
+
     default <R> FailPollEvent<T> failIf(Callable<R> item, Predicate<? super R> predicate) {
         return failIf(Condition.match(item, predicate));
     }
-    
+
     default <R> FailPollEvent<T> failIf(R item, Matcher<? super R> matcher) {
         return failIf(new Callable<R>() {
-            
+
             @Override
             public R call() throws Exception {
                 return item;
             }
-            
+
         }, matcher);
     }
-    
+
     default <R> FailPollEvent<T> failIf(Callable<R> item, Matcher<? super R> matcher) {
         return failIf(new HamcrestCondition<>(item, matcher));
     }
-    
+
     /**
      * Causes the previous actions to be run and events to be awaited before awaiting the next event
      * passed. If the next event goes on to define some action(s) to run before waiting, those will
-     * only run after the previous set of events is awaited (those that came before the
-     * {@link #andThenExpect(Event)} call).
-     * 
-     * @param nextEvent
-     * @return
+     * only run after the previous set of events is awaited (those that came before the {@link
+     * #andThenExpect(Event)} call).
      */
     default <U> Event<U> andThenExpect(Event<U> nextEvent) {
         return new SequentialEvent<U>(this, nextEvent);
     }
-    
+
     /**
      * Causes the previous actions to be run and events to be awaited before awaiting the next event
      * passed. If the next event goes on to define some action(s) to run before waiting, those will
-     * only run after the previous set of events is awaited (those that came before the
-     * {@link #andThenExpect(Condition)} call).
-     * 
-     * @param condition
-     * @return
+     * only run after the previous set of events is awaited (those that came before the {@link
+     * #andThenExpect(Condition)} call).
      */
     default <U> PollEvent<U> andThenExpect(Condition<U> condition) {
         return new SequentialEventWithPollEvent<U>(this, condition.asEvent());
     }
-    
+
     /**
      * @see #andThenExpect(Condition)
-     * @param toReturnTrueOrNonNull
-     * @return
      */
     default <U> PollEvent<U> andThenExpect(Callable<U> toReturnTrueOrNonNull) {
         return andThenExpect(HamcrestCondition.isTrueOrNonNull(toReturnTrueOrNonNull));
     }
-    
+
     /**
      * @see #andThenExpect(Condition)
-     * @param item
-     * @param predicate
-     * @return
      */
     default <U> PollEvent<U> andThenExpect(U item, Predicate<? super U> predicate) {
         return andThenExpect(new Callable<U>() {
-            
+
             @Override
             public U call() throws Exception {
                 return item;
             }
-            
+
         }, predicate);
     }
-    
+
     /**
      * @see #andThenExpect(Condition)
-     * @param item
-     * @param predicate
-     * @return
      */
     default <U> PollEvent<U> andThenExpect(Callable<U> item, Predicate<? super U> predicate) {
         return andThenExpect(Condition.match(item, predicate));
     }
-    
+
     /**
      * @see #andThenExpect(Condition)
-     * @param item
-     * @param matcher
-     * @return
      */
     default <U> PollEvent<U> andThenExpect(U item, Matcher<? super U> matcher) {
         return andThenExpect(new Callable<U>() {
-            
+
             @Override
             public U call() throws Exception {
                 return item;
             }
-            
+
         }, matcher);
     }
-    
+
     /**
      * @see #andThenExpect(Condition)
-     * @param item
-     * @param matcher
-     * @return
      */
     default <U> PollEvent<U> andThenExpect(Callable<U> item, Matcher<? super U> matcher) {
         return andThenExpect(new HamcrestCondition<>(item, matcher));
