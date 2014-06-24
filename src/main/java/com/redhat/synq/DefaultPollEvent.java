@@ -74,6 +74,7 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
             }
             
             try {
+                // TODO: Encapsulate Thread.sleep for testability
                 Thread.sleep(pollingInterval.toMillis());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -94,9 +95,4 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
         
         ThrowableUtil.throwUnchecked(t);
     }
-    
-    private long now() {
-        return System.currentTimeMillis();
-    }
-    
 }
