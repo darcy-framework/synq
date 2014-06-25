@@ -28,25 +28,24 @@ import org.hamcrest.Matcher;
  * Helper class that with static factories for default ConfigurableWait implementations.
  */
 public final class Synq {
-    private Synq() {}
-    
+    private Synq() {
+    }
+
     /**
      * Static factory (just for import static sugar).
-     * 
-     * @return
      */
     public static <T> Event<T> expect(Event<T> toOccur) {
         return toOccur;
     }
-    
+
     public static <T> PollEvent<T> expect(Condition<T> toBeMet) {
         return toBeMet.asEvent();
     }
-    
+
     public static <T> PollEvent<T> expect(Callable<T> toReturnTrueOrNonNull) {
         return expect(HamcrestCondition.isTrueOrNonNull(toReturnTrueOrNonNull));
     }
-    
+
     public static <T> PollEvent<T> expect(T item, Predicate<? super T> predicate) {
         return expect(new Callable<T>() {
 
@@ -54,14 +53,14 @@ public final class Synq {
             public T call() throws Exception {
                 return item;
             }
-            
+
         }, predicate);
     }
-    
+
     public static <T> PollEvent<T> expect(Callable<T> item, Predicate<? super T> predicate) {
         return expect(Condition.match(item, predicate));
     }
-    
+
     public static <T> PollEvent<T> expect(T item, Matcher<? super T> matcher) {
         return expect(new Callable<T>() {
 
@@ -69,26 +68,26 @@ public final class Synq {
             public T call() throws Exception {
                 return item;
             }
-            
+
         }, matcher);
     }
-    
+
     public static <T> PollEvent<T> expect(Callable<T> item, Matcher<? super T> matcher) {
         return expect(new HamcrestCondition<>(item, matcher));
     }
-    
+
     public static <T> FailEvent<T> failIf(Event<T> occurs) {
         return new ForwardingFailEvent<>(occurs);
     }
-    
+
     public static <T> FailPollEvent<T> failIf(Condition<T> isMet) {
         return new ForwardingFailPollEvent<>(isMet.asEvent());
     }
-    
+
     public static <T> FailPollEvent<T> failIf(Callable<T> returnsTrueOrNonNull) {
         return failIf(HamcrestCondition.isTrueOrNonNull(returnsTrueOrNonNull));
     }
-    
+
     public static <T> FailPollEvent<T> failIf(T item, Predicate<? super T> predicate) {
         return failIf(new Callable<T>() {
 
@@ -96,14 +95,14 @@ public final class Synq {
             public T call() throws Exception {
                 return item;
             }
-            
+
         }, predicate);
     }
-    
+
     public static <T> FailPollEvent<T> failIf(Callable<T> item, Predicate<? super T> predicate) {
         return failIf(Condition.match(item, predicate));
     }
-    
+
     public static <T> FailPollEvent<T> failIf(T item, Matcher<? super T> matcher) {
         return failIf(new Callable<T>() {
 
@@ -111,43 +110,40 @@ public final class Synq {
             public T call() throws Exception {
                 return item;
             }
-            
+
         }, matcher);
     }
-    
+
     public static <T> FailPollEvent<T> failIf(Callable<T> item, Matcher<? super T> matcher) {
         return failIf(new HamcrestCondition<>(item, matcher));
     }
-    
+
     /**
      * Static factory for an {@link Event} that runs something just before waiting.
-     * 
-     * @param runnable
-     * @return
      */
     public static After after(Runnable action) {
         return new After(action);
     }
-    
+
     public static class After {
         private Runnable action;
-        
+
         public After(Runnable action) {
             this.action = action;
         }
-        
+
         public <T> Event<T> expect(Event<T> toOccur) {
             return toOccur.after(action);
         }
-        
+
         public <T> PollEvent<T> expect(Condition<T> toBeMet) {
             return toBeMet.asEvent().after(action);
         }
-        
+
         public <T> PollEvent<T> expect(Callable<T> toReturnTrueOrNonNull) {
             return expect(HamcrestCondition.isTrueOrNonNull(toReturnTrueOrNonNull));
         }
-        
+
         public <T> PollEvent<T> expect(T item, Predicate<? super T> predicate) {
             return expect(new Callable<T>() {
 
@@ -155,14 +151,14 @@ public final class Synq {
                 public T call() throws Exception {
                     return item;
                 }
-                
+
             }, predicate);
         }
-        
+
         public <T> PollEvent<T> expect(Callable<T> item, Predicate<? super T> predicate) {
             return expect(Condition.match(item, predicate));
         }
-        
+
         public <T> PollEvent<T> expect(T item, Matcher<? super T> matcher) {
             return expect(new Callable<T>() {
 
@@ -170,26 +166,26 @@ public final class Synq {
                 public T call() throws Exception {
                     return item;
                 }
-                
+
             }, matcher);
         }
-        
+
         public <T> PollEvent<T> expect(Callable<T> item, Matcher<? super T> matcher) {
             return expect(new HamcrestCondition<>(item, matcher));
         }
-        
+
         public <T> FailEvent<T> failIf(Event<T> occurs) {
             return new ForwardingFailEvent<T>(occurs).after(action);
         }
-        
+
         public <T> FailPollEvent<T> failIf(Condition<T> isMet) {
             return new ForwardingFailPollEvent<T>(isMet.asEvent()).after(action);
         }
-        
+
         public <T> FailPollEvent<T> failIf(Callable<T> returnsTrueOrNonNull) {
             return failIf(HamcrestCondition.isTrueOrNonNull(returnsTrueOrNonNull));
         }
-        
+
         public <T> FailPollEvent<T> failIf(T item, Predicate<? super T> predicate) {
             return failIf(new Callable<T>() {
 
@@ -197,14 +193,14 @@ public final class Synq {
                 public T call() throws Exception {
                     return item;
                 }
-                
+
             }, predicate);
         }
-        
+
         public <T> FailPollEvent<T> failIf(Callable<T> item, Predicate<? super T> predicate) {
             return failIf(Condition.match(item, predicate));
         }
-        
+
         public <T> FailPollEvent<T> failIf(T item, Matcher<? super T> matcher) {
             return failIf(new Callable<T>() {
 
@@ -212,10 +208,10 @@ public final class Synq {
                 public T call() throws Exception {
                     return item;
                 }
-                
+
             }, matcher);
         }
-        
+
         public <T> FailPollEvent<T> failIf(Callable<T> item, Matcher<? super T> matcher) {
             return failIf(new HamcrestCondition<>(item, matcher));
         }

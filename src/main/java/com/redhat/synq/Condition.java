@@ -53,7 +53,7 @@ public interface Condition<T> {
      * compared to true event listeners.
      * 
      * @see {@link DefaultPollEvent}
-     * @return The condition as a {@link DefaultPollEvent}
+     * @return The condition as a {@link PollEvent}
      */
     default PollEvent<T> asEvent() {
         return new DefaultPollEvent<T>(this);
@@ -73,7 +73,7 @@ public interface Condition<T> {
             public T lastResult() {
                 return lastResult;
             }
-            
+
         };
     }
     

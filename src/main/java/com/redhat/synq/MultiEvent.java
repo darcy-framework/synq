@@ -76,6 +76,11 @@ public class MultiEvent<T> implements Event<T> {
         return firstResult;
     }
 
+    @Override
+    public String toString() {
+        return original + " or " + additional;
+    }
+
     private synchronized void finishWithResult(T result) {
         if (firstResult == null) {
             firstResult = result;

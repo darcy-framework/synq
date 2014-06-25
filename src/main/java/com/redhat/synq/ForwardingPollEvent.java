@@ -23,5 +23,10 @@ public class ForwardingPollEvent<T> implements PollEvent<T> {
     public PollEvent<T> ignoring(Class<? extends Exception> exception) {
         return event.ignoring(exception);
     }
+
+    @Override
+    public String toString() {
+        return event.toString();
+    }
     
 }

@@ -28,7 +28,6 @@ package com.redhat.synq;
  * 
  * @author ahenning
  *
- * @param <T>
  * @see ForwardingFailEvent
  */
 public interface FailEvent<T> extends Event<T> {

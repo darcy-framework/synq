@@ -81,7 +81,8 @@ public class SequentialEvent<T> implements Event<T> {
                         new ForwardingFailPollEvent<T>(failEvent)));
     }
 
-    private long now() {
-        return System.currentTimeMillis();
+    @Override
+    public String toString() {
+        return original + " and then " + additional;
     }
 }

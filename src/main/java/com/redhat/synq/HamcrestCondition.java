@@ -40,7 +40,7 @@ public class HamcrestCondition<T> implements Condition<T> {
         return new HamcrestCondition<T>(item, matcher);
     }
 
-    public static <T> HamcrestCondition<T> match(final T item, Matcher<? super T> matcher) {
+    public static <T> HamcrestCondition<T> match(T item, Matcher<? super T> matcher) {
         return new HamcrestCondition<T>(() -> item, matcher);
     }
     

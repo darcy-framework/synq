@@ -32,4 +32,9 @@ public class ForwardingEvent<T> implements Event<T> {
     public T waitUpTo(Duration duration) {
         return event.waitUpTo(duration);
     }
+
+    @Override
+    public String toString() {
+        return event.toString();
+    }
 }

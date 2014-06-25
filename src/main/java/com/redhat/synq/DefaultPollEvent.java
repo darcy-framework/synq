@@ -84,6 +84,11 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
         
         return lastResult;
     }
+
+    @Override
+    public String toString() {
+        return condition.toString() + " (polling every " + pollingInterval.toString() +")";
+    }
     
     private void throwIfNotIgnored(Throwable t) throws RuntimeException {
         for (Class<? extends Exception> ignoredException : ignoredExceptions) {

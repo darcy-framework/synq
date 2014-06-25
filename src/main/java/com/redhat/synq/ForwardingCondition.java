@@ -35,4 +35,9 @@ public class ForwardingCondition<T> implements Condition<T> {
     public T lastResult() {
         return condition.lastResult();
     }
+
+    @Override
+    public String toString() {
+        return condition.toString();
+    }
 }

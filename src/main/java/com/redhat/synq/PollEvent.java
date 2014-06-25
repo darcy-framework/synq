@@ -35,5 +35,14 @@ public interface PollEvent<T> extends Event<T> {
     default PollEvent<T> after(Runnable action) {
         return new SequentialEventWithPollEvent<>(d -> {action.run(); return null;}, this);
     }
-    
+
+    @Override
+    default PollEvent<T> describedAs(String description) {
+        return new ForwardingPollEvent<T>(PollEvent.this) {
+            @Override
+            public String toString() {
+                return description;
+            }
+        };
+    }
 }

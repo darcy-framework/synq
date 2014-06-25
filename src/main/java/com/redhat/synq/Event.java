@@ -38,13 +38,13 @@ import java.util.function.Predicate;
  * core default methods:
  *
  * <ul>
- *     <li>{@link #after(Runnable)} - When this Event is awaited, it will first run the action.</li>
- *     <li>{@link #failIf(Event)} - While waiting for the original event, throw an exception if
- *     this other event occurs first.</li>
- *     <li>{@link #or(Event)} - Returns an Event that will trigger when either of these Events
- *     occurs, returning the value associated with whichever happened first.</li>
- *     <li>{@link #andThenExpect(Event)} - Returns an Event that will wait for the the original,
- *     then wait for the second, in that order.</li>
+ * <li>{@link #after(Runnable)} - When this Event is awaited, it will first run the action.</li>
+ * <li>{@link #failIf(Event)} - While waiting for the original event, throw an exception if this
+ * other event occurs first.</li>
+ * <li>{@link #or(Event)} - Returns an Event that will trigger when either of these Events occurs,
+ * returning the value associated with whichever happened first.</li>
+ * <li>{@link #andThenExpect(Event)} - Returns an Event that will wait for the the original, then
+ * wait for the second, in that order.</li>
  * </ul>
  *
  * @param <T> The type of the result of this Event.
@@ -79,6 +79,20 @@ public interface Event<T> {
      */
     default T waitUpTo(long timeout, ChronoUnit unit) {
         return waitUpTo(Duration.of(timeout, unit));
+    }
+
+    /**
+     * Overrides the {@link #toString()} of this event to return the passed description instead. A
+     * timeout message will be constructed in the form of "Timed out after ${duration} waiting for
+     * ${event.toString()}."
+     */
+    default Event<T> describedAs(String description) {
+        return new ForwardingEvent<T>(Event.this) {
+            @Override
+            public String toString() {
+                return description;
+            }
+        };
     }
 
     /**
