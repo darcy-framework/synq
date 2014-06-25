@@ -20,7 +20,6 @@
 package com.redhat.synq;
 
 import java.util.concurrent.Callable;
-import java.util.function.Predicate;
 
 public interface Condition<T> {
     /**
@@ -59,7 +58,7 @@ public interface Condition<T> {
         return new DefaultPollEvent<T>(this);
     }
     
-    static <T> Condition<T> match(Callable<T> item, Predicate<? super T> predicate) {
+    static <T> Condition<T> match(Callable<T> item, CheckedPredicate<? super T> predicate) {
         return new Condition<T>() {
             private T lastResult = null;
             
@@ -77,7 +76,7 @@ public interface Condition<T> {
         };
     }
     
-    static <T> Condition<T> match(T item, Predicate<? super T> predicate) {
+    static <T> Condition<T> match(T item, CheckedPredicate<? super T> predicate) {
         return match(new Callable<T>() {
             
             @Override

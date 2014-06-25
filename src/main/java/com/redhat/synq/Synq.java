@@ -19,10 +19,9 @@
 
 package com.redhat.synq;
 
-import java.util.concurrent.Callable;
-import java.util.function.Predicate;
-
 import org.hamcrest.Matcher;
+
+import java.util.concurrent.Callable;
 
 /**
  * Helper class that with static factories for default ConfigurableWait implementations.
@@ -46,7 +45,7 @@ public final class Synq {
         return expect(HamcrestCondition.isTrueOrNonNull(toReturnTrueOrNonNull));
     }
 
-    public static <T> PollEvent<T> expect(T item, Predicate<? super T> predicate) {
+    public static <T> PollEvent<T> expect(T item, CheckedPredicate<? super T> predicate) {
         return expect(new Callable<T>() {
 
             @Override
@@ -57,7 +56,7 @@ public final class Synq {
         }, predicate);
     }
 
-    public static <T> PollEvent<T> expect(Callable<T> item, Predicate<? super T> predicate) {
+    public static <T> PollEvent<T> expect(Callable<T> item, CheckedPredicate<? super T> predicate) {
         return expect(Condition.match(item, predicate));
     }
 
@@ -88,7 +87,7 @@ public final class Synq {
         return failIf(HamcrestCondition.isTrueOrNonNull(returnsTrueOrNonNull));
     }
 
-    public static <T> FailPollEvent<T> failIf(T item, Predicate<? super T> predicate) {
+    public static <T> FailPollEvent<T> failIf(T item, CheckedPredicate<? super T> predicate) {
         return failIf(new Callable<T>() {
 
             @Override
@@ -99,7 +98,7 @@ public final class Synq {
         }, predicate);
     }
 
-    public static <T> FailPollEvent<T> failIf(Callable<T> item, Predicate<? super T> predicate) {
+    public static <T> FailPollEvent<T> failIf(Callable<T> item, CheckedPredicate<? super T> predicate) {
         return failIf(Condition.match(item, predicate));
     }
 
@@ -144,7 +143,7 @@ public final class Synq {
             return expect(HamcrestCondition.isTrueOrNonNull(toReturnTrueOrNonNull));
         }
 
-        public <T> PollEvent<T> expect(T item, Predicate<? super T> predicate) {
+        public <T> PollEvent<T> expect(T item, CheckedPredicate<? super T> predicate) {
             return expect(new Callable<T>() {
 
                 @Override
@@ -155,7 +154,7 @@ public final class Synq {
             }, predicate);
         }
 
-        public <T> PollEvent<T> expect(Callable<T> item, Predicate<? super T> predicate) {
+        public <T> PollEvent<T> expect(Callable<T> item, CheckedPredicate<? super T> predicate) {
             return expect(Condition.match(item, predicate));
         }
 
@@ -186,7 +185,7 @@ public final class Synq {
             return failIf(HamcrestCondition.isTrueOrNonNull(returnsTrueOrNonNull));
         }
 
-        public <T> FailPollEvent<T> failIf(T item, Predicate<? super T> predicate) {
+        public <T> FailPollEvent<T> failIf(T item, CheckedPredicate<? super T> predicate) {
             return failIf(new Callable<T>() {
 
                 @Override
@@ -197,7 +196,7 @@ public final class Synq {
             }, predicate);
         }
 
-        public <T> FailPollEvent<T> failIf(Callable<T> item, Predicate<? super T> predicate) {
+        public <T> FailPollEvent<T> failIf(Callable<T> item, CheckedPredicate<? super T> predicate) {
             return failIf(Condition.match(item, predicate));
         }
 

@@ -24,7 +24,6 @@ import org.hamcrest.Matcher;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
-import java.util.function.Predicate;
 
 /**
  * An Event represents something that may happen in the future, and can be awaited. Awaiting that
@@ -132,7 +131,7 @@ public interface Event<T> {
         return or(HamcrestCondition.isTrueOrNonNull(returnsTrueOrNonNull));
     }
 
-    default PollEvent<T> or(T item, Predicate<? super T> predicate) {
+    default PollEvent<T> or(T item, CheckedPredicate<? super T> predicate) {
         return or(new Callable<T>() {
 
             @Override
@@ -143,7 +142,7 @@ public interface Event<T> {
         }, predicate);
     }
 
-    default PollEvent<T> or(Callable<T> item, Predicate<? super T> predicate) {
+    default PollEvent<T> or(Callable<T> item, CheckedPredicate<? super T> predicate) {
         return or(Condition.match(item, predicate));
     }
 
@@ -180,7 +179,7 @@ public interface Event<T> {
         return failIf(HamcrestCondition.isTrueOrNonNull(returnsTrueOrNonNull));
     }
 
-    default <R> FailPollEvent<T> failIf(R item, Predicate<? super R> predicate) {
+    default <R> FailPollEvent<T> failIf(R item, CheckedPredicate<? super R> predicate) {
         return failIf(new Callable<R>() {
 
             @Override
@@ -191,7 +190,7 @@ public interface Event<T> {
         }, predicate);
     }
 
-    default <R> FailPollEvent<T> failIf(Callable<R> item, Predicate<? super R> predicate) {
+    default <R> FailPollEvent<T> failIf(Callable<R> item, CheckedPredicate<? super R> predicate) {
         return failIf(Condition.match(item, predicate));
     }
 
@@ -240,7 +239,7 @@ public interface Event<T> {
     /**
      * @see #andThenExpect(Condition)
      */
-    default <U> PollEvent<U> andThenExpect(U item, Predicate<? super U> predicate) {
+    default <U> PollEvent<U> andThenExpect(U item, CheckedPredicate<? super U> predicate) {
         return andThenExpect(new Callable<U>() {
 
             @Override
@@ -254,7 +253,7 @@ public interface Event<T> {
     /**
      * @see #andThenExpect(Condition)
      */
-    default <U> PollEvent<U> andThenExpect(Callable<U> item, Predicate<? super U> predicate) {
+    default <U> PollEvent<U> andThenExpect(Callable<U> item, CheckedPredicate<? super U> predicate) {
         return andThenExpect(Condition.match(item, predicate));
     }
 
