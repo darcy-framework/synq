@@ -29,10 +29,8 @@ public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implemen
     @Override
     public FailEvent<T> after(Runnable action) {
         return new SequentialEventWithFailEvent<T>(original, 
-                new SequentialEventWithFailEvent<>(d -> {
-                    action.run(); 
-                    return null;
-                }, (FailEvent<T>) additional));
+                new SequentialEventWithFailEvent<>(new ActionEvent(action),
+                        (FailEvent<T>) additional));
     }
     
     @SuppressWarnings("unchecked")
@@ -42,5 +40,12 @@ public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implemen
         
         return this;
     }
-    
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
+        return this;
+    }
 }

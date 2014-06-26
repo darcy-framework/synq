@@ -24,7 +24,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 
-public class EventListener<T> implements Event<T> {
+public class EventListener<T> extends AbstractEvent<T> {
     private CountDownLatch latch = new CountDownLatch(1);
     private T result;
     

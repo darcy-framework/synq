@@ -42,4 +42,12 @@ public class MultiEventWithPollEvent<T> extends MultiEvent<T> implements PollEve
         
         return this;
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public PollEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
+        return this;
+    }
 }

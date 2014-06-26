@@ -24,11 +24,11 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 
-import java.util.concurrent.Callable;
-
 import org.hamcrest.Matcher;
 
-public class HamcrestCondition<T> implements Condition<T> {
+import java.util.concurrent.Callable;
+
+public class HamcrestCondition<T> extends AbstractCondition<T> {
     private static final Matcher<Object> isTrueOrNonNull = 
             not(anyOf(nullValue(), equalTo((Object)Boolean.FALSE)));
     
@@ -59,6 +59,8 @@ public class HamcrestCondition<T> implements Condition<T> {
     public HamcrestCondition(Callable<T> item, Matcher<? super T> matcher) {
         this.item = item;
         this.matcher = matcher;
+
+        describedAs(item + " to be " + matcher.toString());
     }
 
     @Override
@@ -70,11 +72,6 @@ public class HamcrestCondition<T> implements Condition<T> {
     @Override
     public T lastResult() {
         return lastResult;
-    }
-    
-    @Override
-    public String toString() {
-        return matcher.toString();
     }
     
     public Callable<T> getSupplier() {

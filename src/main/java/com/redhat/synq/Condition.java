@@ -43,6 +43,8 @@ public interface Condition<T> {
      *             if the test was not yet run via {@link #isMet()}, or the previous test failed.
      */
     T lastResult();
+
+    Condition<T> describedAs(String description);
     
     /**
      * Converts this condition to an {@link Event} by polling at some default interval until the
@@ -59,7 +61,7 @@ public interface Condition<T> {
     }
     
     static <T> Condition<T> match(Callable<T> item, CheckedPredicate<? super T> predicate) {
-        return new Condition<T>() {
+        return new AbstractCondition<T>() {
             private T lastResult = null;
             
             @Override
@@ -73,7 +75,7 @@ public interface Condition<T> {
                 return lastResult;
             }
 
-        };
+        }.describedAs(item + " to satisfy " + predicate);
     }
     
     static <T> Condition<T> match(T item, CheckedPredicate<? super T> predicate) {
@@ -82,6 +84,11 @@ public interface Condition<T> {
             @Override
             public T call() throws Exception {
                 return item;
+            }
+
+            @Override
+            public String toString() {
+                return item.toString();
             }
             
         }, predicate);

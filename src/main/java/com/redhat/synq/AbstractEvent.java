@@ -19,15 +19,23 @@
 
 package com.redhat.synq;
 
-public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
-    @Override
-    FailPollEvent<T> throwing(Throwable throwable);
+/**
+ * Provides default implementations of {@link #describedAs(String)} and {@link #toString()}. If an
+ * implementation can provide a somewhat useful description automatically, it should do so by
+ * calling {@link #describedAs(String)} itself.
+ */
+public abstract class AbstractEvent<T> implements Event<T> {
+    private String description = super.toString();
 
     @Override
-    FailPollEvent<T> describedAs(String description);
-    
+    public Event<T> describedAs(String description) {
+        this.description = description;
+
+        return this;
+    }
+
     @Override
-    default FailPollEvent<T> after(Runnable action) {
-        return new SequentialEventWithFailPollEvent<>(new ActionEvent(action), this);
+    public String toString() {
+        return description;
     }
 }

@@ -19,15 +19,28 @@
 
 package com.redhat.synq;
 
-public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
-    @Override
-    FailPollEvent<T> throwing(Throwable throwable);
+import java.time.Duration;
+
+/**
+ * An instantaneously triggered Event that is simply a wrapper around some
+ * {@link java.lang.Runnable}. It is a means to use an Event as a means of running some action
+ * before awaiting a <em>real</em> event, as in {@link Event#after(Runnable)}.
+ *
+ * @see com.redhat.synq.SequentialEvent
+ */
+public class ActionEvent extends AbstractEvent<Void> {
+    private final Runnable action;
+
+    public ActionEvent(Runnable action) {
+        this.action = action;
+
+        describedAs("action to finish (" + action + ")");
+    }
 
     @Override
-    FailPollEvent<T> describedAs(String description);
-    
-    @Override
-    default FailPollEvent<T> after(Runnable action) {
-        return new SequentialEventWithFailPollEvent<>(new ActionEvent(action), this);
+    public Void waitUpTo(Duration duration) {
+        action.run();
+
+        return null;
     }
 }

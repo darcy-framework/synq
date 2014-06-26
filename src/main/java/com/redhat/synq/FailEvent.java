@@ -32,12 +32,12 @@ package com.redhat.synq;
  */
 public interface FailEvent<T> extends Event<T> {
     FailEvent<T> throwing(Throwable throwable);
+
+    @Override
+    FailEvent<T> describedAs(String description);
     
     @Override
     default FailEvent<T> after(Runnable action) {
-        return new SequentialEventWithFailEvent<>(d -> {
-            action.run();
-            return null;
-        }, this);
+        return new SequentialEventWithFailEvent<>(new ActionEvent(action), this);
     }
 }

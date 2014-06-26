@@ -33,10 +33,8 @@ public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> impl
     @Override
     public FailPollEvent<T> after(Runnable action) {
         return new SequentialEventWithFailPollEvent<T>(original,
-                new SequentialEventWithFailPollEvent<>(d -> {
-                    action.run();
-                    return null;
-                }, (FailPollEvent<T>) additional));
+                new SequentialEventWithFailPollEvent<>(new ActionEvent(action),
+                        (FailPollEvent<T>) additional));
     }
     
     @SuppressWarnings("unchecked")
@@ -59,6 +57,14 @@ public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> impl
     public FailPollEvent<T> ignoring(Class<? extends Exception> exception) {
         ((PollEvent<T>) additional).ignoring(exception);
         
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailPollEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
         return this;
     }
 }

@@ -33,7 +33,7 @@ public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implement
 
     @SuppressWarnings("unchecked")
     @Override
-    public PollEvent<T> pollingEvery(Duration pollingInterval) {
+    public FailPollEvent<T> pollingEvery(Duration pollingInterval) {
         ((PollEvent<T>) original).pollingEvery(pollingInterval);
         
         return this;
@@ -41,7 +41,7 @@ public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implement
     
     @SuppressWarnings("unchecked")
     @Override
-    public PollEvent<T> ignoring(Class<? extends Exception> exception) {
+    public FailPollEvent<T> ignoring(Class<? extends Exception> exception) {
         ((PollEvent<T>) original).ignoring(exception);
         
         return this;
@@ -50,7 +50,14 @@ public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implement
     @Override
     public FailPollEvent<T> throwing(Throwable throwable) {
         super.throwing(throwable);
-        
+
+        return this;
+    }
+
+    @Override
+    public FailPollEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
         return this;
     }
 }

@@ -22,13 +22,15 @@ package com.redhat.synq;
 import java.time.Duration;
 import java.time.Instant;
 
-public class SequentialEvent<T> implements Event<T> {
+public class SequentialEvent<T> extends AbstractEvent<T> {
     protected final Event<?> original;
     protected Event<? extends T> additional;
     
     public SequentialEvent(Event<?> original, Event<? extends T> additional) {
         this.original = original;
         this.additional = additional;
+
+        describedAs(additional + ", after waiting for " + original);
     }
     
     @Override
@@ -48,11 +50,8 @@ public class SequentialEvent<T> implements Event<T> {
     
     @Override
     public Event<T> after(Runnable action) {
-        return new SequentialEvent<>(original, 
-                new SequentialEvent<>(d -> {
-                    action.run();
-                    return null;
-                }, additional));
+        return new SequentialEvent<>(original,
+                new SequentialEvent<>(new ActionEvent(action), additional));
     }
     
     @Override
@@ -79,10 +78,5 @@ public class SequentialEvent<T> implements Event<T> {
         return new SequentialEventWithFailPollEvent<T>(original, 
                 new MultiEventWithFailPollEvent<T>(additional, 
                         new ForwardingFailPollEvent<T>(failEvent)));
-    }
-
-    @Override
-    public String toString() {
-        return original + " and then " + additional;
     }
 }

@@ -30,7 +30,7 @@ import java.time.Duration;
  *
  * @param <T>
  */
-public class ForwardingFailEvent<T> implements FailEvent<T> {
+public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEvent<T> {
     protected Event<?> original;
     private Throwable throwable;
     
@@ -61,10 +61,17 @@ public class ForwardingFailEvent<T> implements FailEvent<T> {
         
         return null;
     }
-    
+
     public FailEvent<T> throwing(Throwable throwable) {
         this.throwable = throwable;
-        
+
+        return this;
+    }
+
+    @Override
+    public FailEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
         return this;
     }
 }

@@ -3,7 +3,7 @@ package com.redhat.synq;
 import java.time.Duration;
 
 public class ForwardingPollEvent<T> implements PollEvent<T> {
-    private final PollEvent<T> event;
+    protected final PollEvent<T> event;
     
     public ForwardingPollEvent(PollEvent<T> pollEvent) {
         this.event = pollEvent;
@@ -22,6 +22,11 @@ public class ForwardingPollEvent<T> implements PollEvent<T> {
     @Override
     public PollEvent<T> ignoring(Class<? extends Exception> exception) {
         return event.ignoring(exception);
+    }
+
+    @Override
+    public PollEvent<T> describedAs(String description) {
+        return event.describedAs(description);
     }
 
     @Override

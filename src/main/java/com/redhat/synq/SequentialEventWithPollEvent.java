@@ -31,10 +31,8 @@ public class SequentialEventWithPollEvent<T> extends SequentialEvent<T> implemen
     @Override
     public PollEvent<T> after(Runnable action) {
         return new SequentialEventWithPollEvent<T>(original, 
-                new SequentialEventWithPollEvent<>(d -> {
-                    action.run();
-                    return null;
-                }, (PollEvent<T>) additional));
+                new SequentialEventWithPollEvent<>(new ActionEvent(action),
+                        (PollEvent<T>) additional));
     }
 
     @SuppressWarnings("unchecked")
@@ -50,6 +48,14 @@ public class SequentialEventWithPollEvent<T> extends SequentialEvent<T> implemen
     public PollEvent<T> ignoring(Class<? extends Exception> exception) {
         ((PollEvent<T>) additional).ignoring(exception);
         
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public PollEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
         return this;
     }
 }

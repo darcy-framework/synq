@@ -30,11 +30,9 @@ import java.util.concurrent.Callable;
  * Event (via {@link #waitUpTo(Duration)}) returns some result associated with the Event you were
  * waiting for.
  *
- * <p>Events only have one abstract method, {@link #waitUpTo(java.time.Duration)}, but they have
- * several default methods for taking an existing an event and composing another from it.
- *
- * <p>Many of the default methods are simply overrides of others for convenient syntax. Here are the
- * core default methods:
+ * <p>Events have several default methods for taking an existing an event and composing another
+ * from it. Many of them are simply overrides of others for convenient syntax. Here are the core
+ * default methods that are ultimately used by the various overrides:
  *
  * <ul>
  * <li>{@link #after(Runnable)} - When this Event is awaited, it will first run the action.</li>
@@ -48,7 +46,6 @@ import java.util.concurrent.Callable;
  *
  * @param <T> The type of the result of this Event.
  */
-@FunctionalInterface
 public interface Event<T> {
     /**
      * Block the thread until the event has occurred. Will block the thread for a maximum of the
@@ -62,6 +59,28 @@ public interface Event<T> {
      * Event occurs.
      */
     T waitUpTo(Duration duration);
+
+    /**
+     * Most Event objects are constructed in a such a way that it is difficult to programmatically
+     * determine an appropriate description to return for {@link #toString()}. The description in
+     * this message will change the output of {@link #toString()} to <code>description</code>.
+     *
+     * <p>The output of {@link #toString()} is what is used in
+     * {@link com.redhat.synq.TimeoutException TimeoutExceptions}, in the form, "Timed out after
+     * ${duration} waiting for ${event.toString()}."
+     *
+     * @param description A description that works well with a timeout message. That is, it should
+     * fit grammatically in the sentence, "Timed out after ${duration} waiting for ${description}."
+     */
+    Event<T> describedAs(String description);
+
+    /**
+     * Returns the description of the event. Depending on the implementation, a readable description
+     * may be constructable programmatically, however most of the time it is a good idea to assign
+     * a description manually for an event via {@link #describedAs(String)}.
+     */
+    @Override
+    String toString();
 
     // Default methods
 
@@ -81,20 +100,6 @@ public interface Event<T> {
     }
 
     /**
-     * Overrides the {@link #toString()} of this event to return the passed description instead. A
-     * timeout message will be constructed in the form of "Timed out after ${duration} waiting for
-     * ${event.toString()}."
-     */
-    default Event<T> describedAs(String description) {
-        return new ForwardingEvent<T>(Event.this) {
-            @Override
-            public String toString() {
-                return description;
-            }
-        };
-    }
-
-    /**
      * Perform some action before waiting. Will always run before waiting begins, unless after an
      * {@link #andThenExpect(Event)}, in which case the action will run, and the first set of events
      * will be awaited. Once that set is satisfied, then any actions defined after an {@link
@@ -102,10 +107,7 @@ public interface Event<T> {
      * awaited.
      */
     default Event<T> after(Runnable action) {
-        return new SequentialEvent<>(d -> {
-            action.run();
-            return null;
-        }, this);
+        return new SequentialEvent<>(new ActionEvent(action), this);
     }
 
     /**

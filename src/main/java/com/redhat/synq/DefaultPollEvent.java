@@ -46,7 +46,14 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
         ignoredExceptions.add(exception);
         return this;
     }
-    
+
+    @Override
+    public PollEvent<T> describedAs(String description) {
+        condition.describedAs(description);
+
+        return this;
+    }
+
     @Override
     public T waitUpTo(Duration duration) {
         boolean met = false;
@@ -98,6 +105,6 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
             }
         }
         
-        ThrowableUtil.throwUnchecked(t);
+        throw ThrowableUtil.throwUnchecked(t);
     }
 }

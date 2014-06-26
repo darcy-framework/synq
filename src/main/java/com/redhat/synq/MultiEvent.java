@@ -26,7 +26,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 
-public class MultiEvent<T> implements Event<T> {
+public class MultiEvent<T> extends AbstractEvent<T> {
     private final Event<? extends T> original;
     protected final Event<? extends T> additional;
     private T firstResult;
@@ -38,6 +38,8 @@ public class MultiEvent<T> implements Event<T> {
     public MultiEvent(Event<? extends T> original, Event<? extends T> additional) {
         this.original = original;
         this.additional = additional;
+
+        describedAs(original + " or " + additional);
     }
 
     @Override
@@ -74,11 +76,6 @@ public class MultiEvent<T> implements Event<T> {
         }
 
         return firstResult;
-    }
-
-    @Override
-    public String toString() {
-        return original + " or " + additional;
     }
 
     private synchronized void finishWithResult(T result) {

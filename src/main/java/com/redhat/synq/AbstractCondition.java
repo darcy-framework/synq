@@ -19,15 +19,18 @@
 
 package com.redhat.synq;
 
-public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
-    @Override
-    FailPollEvent<T> throwing(Throwable throwable);
+public abstract class AbstractCondition<T> implements Condition<T> {
+    private String description = super.toString();
 
     @Override
-    FailPollEvent<T> describedAs(String description);
-    
+    public Condition<T> describedAs(String description) {
+        this.description = description;
+
+        return this;
+    }
+
     @Override
-    default FailPollEvent<T> after(Runnable action) {
-        return new SequentialEventWithFailPollEvent<>(new ActionEvent(action), this);
+    public String toString() {
+        return description;
     }
 }

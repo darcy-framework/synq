@@ -30,19 +30,12 @@ public interface PollEvent<T> extends Event<T> {
     PollEvent<T> pollingEvery(Duration pollingInterval);
 
     PollEvent<T> ignoring(Class<? extends Exception> exception);
+
+    @Override
+    PollEvent<T> describedAs(String description);
     
     @Override
     default PollEvent<T> after(Runnable action) {
-        return new SequentialEventWithPollEvent<>(d -> {action.run(); return null;}, this);
-    }
-
-    @Override
-    default PollEvent<T> describedAs(String description) {
-        return new ForwardingPollEvent<T>(PollEvent.this) {
-            @Override
-            public String toString() {
-                return description;
-            }
-        };
+        return new SequentialEventWithPollEvent<>(new ActionEvent(action), this);
     }
 }

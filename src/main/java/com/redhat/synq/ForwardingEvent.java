@@ -22,15 +22,20 @@ package com.redhat.synq;
 import java.time.Duration;
 
 public class ForwardingEvent<T> implements Event<T> {
-    private final Event<? extends T> event;
+    protected final Event<T> event;
     
-    public ForwardingEvent(Event<? extends T> event) {
+    public ForwardingEvent(Event<T> event) {
         this.event = event;
     }
 
     @Override
     public T waitUpTo(Duration duration) {
         return event.waitUpTo(duration);
+    }
+
+    @Override
+    public Event<T> describedAs(String description) {
+        return event.describedAs(description);
     }
 
     @Override

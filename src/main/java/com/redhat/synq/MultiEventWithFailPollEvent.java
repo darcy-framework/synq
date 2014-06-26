@@ -51,4 +51,12 @@ public class MultiEventWithFailPollEvent<T> extends MultiEvent<T> implements Fai
         
         return this;
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailPollEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
+        return this;
+    }
 }

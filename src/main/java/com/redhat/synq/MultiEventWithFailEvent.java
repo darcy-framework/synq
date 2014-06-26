@@ -32,5 +32,13 @@ public class MultiEventWithFailEvent<T> extends MultiEvent<T> implements FailEve
         
         return this;
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
+        return this;
+    }
     
 }

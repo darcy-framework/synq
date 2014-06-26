@@ -20,9 +20,9 @@
 package com.redhat.synq;
 
 public class ForwardingCondition<T> implements Condition<T> {
-    private final Condition<? extends T> condition;
+    private final Condition<T> condition;
     
-    public ForwardingCondition(Condition<? extends T> condition) {
+    public ForwardingCondition(Condition<T> condition) {
         this.condition = condition;
     }
     
@@ -34,6 +34,11 @@ public class ForwardingCondition<T> implements Condition<T> {
     @Override
     public T lastResult() {
         return condition.lastResult();
+    }
+
+    @Override
+    public Condition<T> describedAs(String description) {
+        return condition.describedAs(description);
     }
 
     @Override
