@@ -1,6 +1,6 @@
 synq
 ====
-[![Build Status](https://travis-ci.org/darcy-framework/synq.svg?branch=master)](https://travis-ci.org/darcy-framework/synq)
+[![Build Status](https://travis-ci.org/darcy-framework/synq.svg?branch=master)](https://travis-ci.org/darcy-framework/synq) [![Coverage Status](https://coveralls.io/repos/darcy-framework/synq/badge.png?branch=master)](https://coveralls.io/r/darcy-framework/synq?branch=master)
 
 Synq is a small Java 8 library for syncing up a thread with some flexible configuration of external event(s). 
 
