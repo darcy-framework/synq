@@ -52,6 +52,12 @@ public interface Event<T> {
      * specified duration, at which point a {@link com.redhat.synq.TimeoutException} will be
      * thrown.
      *
+     * <p>If a wait operation should break, you can interrupt the thread currently waiting. That is,
+     * Event implementations must respond to thread interrupts by ceasing to block the thread and
+     * returning null. Other Event types use interrupts when they no longer care whether or when
+     * a particular Event is satisfied. Interrupts are a means to tell Events to stop doing
+     * unnecessary work.
+     *
      * @return The "result" of the event, which varies per implementation. If there is some value
      * that is being examined, generally when the value meets the expected criteria it is that value
      * that should be returned.
@@ -88,6 +94,12 @@ public interface Event<T> {
      * Block the thread until the event has occurred. Will block the thread for a maximum of the
      * specified duration, at which point a {@link com.redhat.synq.TimeoutException} will be
      * thrown.
+     *
+     * <p>If a wait operation should break, you can interrupt the thread currently waiting. That is,
+     * Event implementations must respond to thread interrupts by ceasing to block the thread and
+     * returning null. Other Event types use interrupts when they no longer care whether or when
+     * a particular Event is satisfied. Interrupts are a means to tell Events to stop doing
+     * unnecessary work.
      *
      * @return The "result" of the event, which varies per implementation. If there is some value
      * that is being examined, generally when the value meets the expected criteria it is that value
