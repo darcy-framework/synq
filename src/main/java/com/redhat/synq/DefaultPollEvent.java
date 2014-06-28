@@ -28,12 +28,18 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
     private static final Duration DEFAULT_POLLING_INTERVAL = Duration.ofSeconds(1);
 
     private final Condition<T> condition;
+    private final TimeKeeper timeKeeper;
 
     private Duration pollingInterval = DEFAULT_POLLING_INTERVAL;
     private Set<Class<? extends Exception>> ignoredExceptions = new HashSet<>();
     
     public DefaultPollEvent(Condition<T> condition) {
+        this(condition, TimeKeeper.systemTimeKeeper());
+    }
+
+    public DefaultPollEvent(Condition<T> condition, TimeKeeper timeKeeper) {
         this.condition = condition;
+        this.timeKeeper = timeKeeper;
     }
     
     public DefaultPollEvent<T> pollingEvery(Duration pollingInterval) {
@@ -58,9 +64,21 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
     public T waitUpTo(Duration duration) {
         boolean met = false;
         T lastResult = null;
-        Instant timeoutTime = Instant.now().plus(duration);
+        Instant timeoutTime = timeKeeper.instant().plus(duration);
+        Instant now;
         
         while (!met) {
+            if (Thread.currentThread().isInterrupted()) {
+                return null;
+            }
+
+            now = timeKeeper.instant();
+
+            if (now.isAfter(timeoutTime)
+                    || now.equals(timeoutTime)) {
+                throw new TimeoutException(this, duration);
+            }
+
             try {
                 met = condition.isMet();
                 lastResult = condition.lastResult();
@@ -71,22 +89,8 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
             } catch (Exception e) {
                 throwIfNotIgnored(e);
             }
-            
-            if (Thread.currentThread().isInterrupted()) {
-                return null;
-            }
-            
-            if (Instant.now().isAfter(timeoutTime)) {
-                throw new TimeoutException(this, duration);
-            }
-            
-            try {
-                // TODO: Encapsulate Thread.sleep for testability
-                Thread.sleep(pollingInterval.toMillis());
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return null;
-            }
+
+            timeKeeper.sleepFor(pollingInterval);
         }
         
         return lastResult;
