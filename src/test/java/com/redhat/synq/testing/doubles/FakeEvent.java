@@ -58,6 +58,10 @@ public class FakeEvent<T> extends AbstractEvent<T> {
     public T waitUpTo(Duration duration) {
         Duration sleepTime = Duration.between(timeKeeper.instant(), occurTime);
 
+        if (sleepTime.compareTo(Duration.ZERO) <= 0) {
+            sleepTime = Duration.ZERO;
+        }
+
         if (sleepTime.compareTo(duration) > 0) {
             timeKeeper.sleepFor(duration);
 
