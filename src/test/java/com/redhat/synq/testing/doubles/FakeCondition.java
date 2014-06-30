@@ -24,13 +24,14 @@ import com.redhat.synq.TimeKeeper;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.function.Supplier;
 
 /**
  * A fake condition that is satisfied after some predetermined amount of time, with some
  * predetermined result.
  */
 public class FakeCondition<T> extends AbstractCondition<T> {
-    private final T finalResult;
+    private final Supplier<T> finalResult;
     private final TimeKeeper timeKeeper;
     private final Instant metTime;
 
@@ -47,7 +48,7 @@ public class FakeCondition<T> extends AbstractCondition<T> {
      * instantiated, as specified by <code>timeUntilMet</code>. The result of this condition is null
      * until it is met, in which case the result is <code>finalResult</code>.
      */
-    public FakeCondition(T finalResult, Duration timeUntilMet, TimeKeeper timeKeeper) {
+    public FakeCondition(Supplier<T> finalResult, Duration timeUntilMet, TimeKeeper timeKeeper) {
         this.finalResult = finalResult;
         this.timeKeeper = timeKeeper;
         this.metTime = Instant.now(timeKeeper).plus(timeUntilMet);
@@ -56,18 +57,14 @@ public class FakeCondition<T> extends AbstractCondition<T> {
     }
 
     @Override
-    public boolean isMet() throws Exception {
+    public boolean isMet() {
         return Instant.now(timeKeeper).isAfter(metTime);
     }
 
     @Override
     public T lastResult() {
-        try {
-            if (isMet()) {
-                return finalResult;
-            }
-        } catch (Exception ignored) {
-            // fall through
+        if (isMet()) {
+            return finalResult.get();
         }
 
         return null;

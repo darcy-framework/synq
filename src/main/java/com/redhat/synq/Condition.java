@@ -31,16 +31,18 @@ public interface Condition<T> {
      * interesting object available related to that logic by overriding {@link #lastResult()}.
      * 
      * @return True if the condition was met. False if not.
+     * @throws com.redhat.synq.ConditionEvaluationException if a checked exception occurred while
+     * trying to determine if the condition was met.
      */
-    boolean isMet() throws Exception;
+    boolean isMet();
     
     /**
      * Requires the condition be first evaluated via {@link #isMet()}.
      * 
      * @return The last value returned by the computation under test, or a reference to the object
-     *         under examination.
-     * @throws IllegalStateException
-     *             if the test was not yet run via {@link #isMet()}, or the previous test failed.
+     * under examination.
+     * @throws IllegalStateException if the test was not yet run via {@link #isMet()}, or the
+     * previous test failed.
      */
     T lastResult();
 
@@ -65,9 +67,15 @@ public interface Condition<T> {
             private T lastResult = null;
             
             @Override
-            public boolean isMet() throws Exception {
-                lastResult = item.call();
-                return predicate.test(lastResult);
+            public boolean isMet() {
+                try {
+                    lastResult = item.call();
+                    return predicate.test(lastResult);
+                } catch (RuntimeException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new ConditionEvaluationException(e);
+                }
             }
             
             @Override

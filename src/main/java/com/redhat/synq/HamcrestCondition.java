@@ -64,8 +64,15 @@ public class HamcrestCondition<T> extends AbstractCondition<T> {
     }
 
     @Override
-    public boolean isMet() throws Exception {
-        lastResult = item.call();
+    public boolean isMet() {
+        try {
+            lastResult = item.call();
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ConditionEvaluationException(e);
+        }
+
         return matcher.matches(lastResult);
     }
 

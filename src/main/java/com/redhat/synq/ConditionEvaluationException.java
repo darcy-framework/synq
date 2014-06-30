@@ -19,30 +19,17 @@
 
 package com.redhat.synq;
 
-public class ForwardingCondition<T> implements Condition<T> {
-    private final Condition<T> condition;
-    
-    public ForwardingCondition(Condition<T> condition) {
-        this.condition = condition;
-    }
-    
-    @Override
-    public boolean isMet() {
-        return condition.isMet();
-    }
-    
-    @Override
-    public T lastResult() {
-        return condition.lastResult();
+public class ConditionEvaluationException extends SynqException {
+    public ConditionEvaluationException(String message) {
+        super(message);
     }
 
-    @Override
-    public Condition<T> describedAs(String description) {
-        return condition.describedAs(description);
+    public ConditionEvaluationException(Throwable cause) {
+        super(cause);
     }
 
-    @Override
-    public String toString() {
-        return condition.toString();
+    public ConditionEvaluationException(String message, Throwable cause) {
+        super(message, cause);
+
     }
 }

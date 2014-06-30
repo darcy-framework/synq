@@ -27,7 +27,7 @@ public class NeverMetCondition extends AbstractCondition<Object> {
     }
 
     @Override
-    public boolean isMet() throws Exception {
+    public boolean isMet() {
         return false;
     }
 
