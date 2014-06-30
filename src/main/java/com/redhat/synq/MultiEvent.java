@@ -56,7 +56,11 @@ public class MultiEvent<T> extends AbstractEvent<T> {
         timedOut = false;
 
         try {
-            timedOut = !latch.await(duration.toMillis(), MILLISECONDS);
+            // Also check for TimeoutExceptions from the inner events themselves. If either of their
+            // threads beats the latch towards a timeout, we want to make sure we throw our own
+            // MultiEvent TimeoutException instead of an individual event's.
+            timedOut = !latch.await(duration.toMillis(), MILLISECONDS)
+                    || throwable instanceof TimeoutException;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return null;

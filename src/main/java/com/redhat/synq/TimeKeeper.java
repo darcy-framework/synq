@@ -47,7 +47,7 @@ public abstract class TimeKeeper extends Clock {
         sleepFor(Duration.of(amount, unit));
     }
 
-    public static class SystemTimeKeeper extends TimeKeeper {
+    private static class SystemTimeKeeper extends TimeKeeper {
         private final Clock systemClock = Clock.systemUTC();
 
         @Override

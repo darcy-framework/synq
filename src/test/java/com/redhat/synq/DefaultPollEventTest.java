@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.redhat.synq.testing.TestException;
 import com.redhat.synq.testing.doubles.FakeCondition;
 import com.redhat.synq.testing.doubles.FakeTimeKeeper;
 import com.redhat.synq.testing.doubles.NeverMetCondition;
@@ -94,7 +95,7 @@ public class DefaultPollEventTest {
 
     @Test
     public void shouldReturnTheLastExaminedResultOfTheCondition() {
-        Condition<String> condition = new FakeCondition<>("Synq", FIFTY_MILLIS, timeKeeper);
+        Condition<String> condition = new FakeCondition<>(() -> "Synq", FIFTY_MILLIS, timeKeeper);
 
         String result = new DefaultPollEvent<>(condition, timeKeeper)
                 .pollingEvery(10, MILLIS)
@@ -119,5 +120,26 @@ public class DefaultPollEventTest {
                 .toString();
 
         assertThat(eventToString, containsString("a manually described test event to occur"));
+    }
+
+    @Test(expected = TestException.class)
+    public void shouldThrowExceptionInConditionIfNotIgnored() {
+        Condition<Object> condition = new FakeCondition<Object>(
+                () -> { throw new TestException(); }, FIFTY_MILLIS, timeKeeper);
+
+        new DefaultPollEvent<>(condition, timeKeeper)
+                .pollingEvery(10, MILLIS)
+                .waitUpTo(100, MILLIS);
+    }
+
+    @Test
+    public void shouldNotThrowExceptionInConditionIfIgnored() {
+        Condition<Object> condition = new FakeCondition<Object>(
+                () -> { throw new TestException(); }, FIFTY_MILLIS, timeKeeper);
+
+        new DefaultPollEvent<>(condition, timeKeeper)
+                .pollingEvery(10, MILLIS)
+                .ignoring(TestException.class)
+                .waitUpTo(100, MILLIS);
     }
 }

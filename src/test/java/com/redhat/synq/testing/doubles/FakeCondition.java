@@ -40,7 +40,7 @@ public class FakeCondition<T> extends AbstractCondition<T> {
      * instantiated, as specified by <code>timeUntilMet</code>.
      */
     public FakeCondition(Duration timeUntilMet, TimeKeeper timeKeeper) {
-        this(null, timeUntilMet, timeKeeper);
+        this(() -> null, timeUntilMet, timeKeeper);
     }
 
     /**

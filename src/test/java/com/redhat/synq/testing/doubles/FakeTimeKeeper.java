@@ -19,8 +19,6 @@
 
 package com.redhat.synq.testing.doubles;
 
-import com.redhat.synq.Event;
-import com.redhat.synq.EventListener;
 import com.redhat.synq.TimeKeeper;
 
 import java.time.Clock;
@@ -34,6 +32,8 @@ import java.util.List;
 /**
  * A TimeKeeper who's only means of recording the passage of time is by calling
  * {@link #sleepFor(java.time.Duration)}. Useful for determinate testing.
+ *
+ * <p><strong>Is not threadsafe.</strong>
  *
  * <p>You can imagine this as modeling a special universe where all computations are instantaneous;
  * time only passes when the computations specifically ask to pause (sleep) for a bit.
