@@ -30,7 +30,7 @@ public class SequentialEvent<T> extends AbstractEvent<T> {
         this.original = original;
         this.additional = additional;
 
-        describedAs(additional + ", after waiting for " + original);
+        describedAs(original + " and then " + additional);
     }
     
     @Override
