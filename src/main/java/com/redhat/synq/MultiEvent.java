@@ -63,6 +63,10 @@ public class MultiEvent<T> extends AbstractEvent<T> {
                     || throwable instanceof TimeoutException;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+
+            originalWaiter.interrupt();
+            additionalWaiter.interrupt();
+
             return null;
         }
 

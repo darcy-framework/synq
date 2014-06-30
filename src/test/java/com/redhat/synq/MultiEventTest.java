@@ -23,8 +23,10 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import com.redhat.synq.testing.TestException;
 import com.redhat.synq.testing.doubles.FakeEvent;
@@ -47,7 +49,7 @@ public class MultiEventTest {
 
     @Rule
     public LogTestTime logTestTime = new LogTestTime();
-    
+
     private static final Duration TEN_MILLIS = Duration.ofMillis(10);
     private static final Duration THIRTY_MILLIS = Duration.ofMillis(30);
     private static final Duration FIFTY_MILLIS = Duration.ofMillis(50);
@@ -144,5 +146,33 @@ public class MultiEventTest {
 
         new MultiEvent<>(event1, event2)
                 .waitUpTo(200, MILLIS);
+    }
+
+    @Test
+    public void shouldStopWaitingAndInterruptInnerEventsIfThreadIsInterrupted() throws
+            InterruptedException {
+        Thread multiEventThread = Thread.currentThread();
+        IntSupplier mockObject = mock(IntSupplier.class);
+
+        // Will examine value to see if thread was allowed to complete
+        when(mockObject.getAsInt()).thenReturn(1);
+
+        Event<Integer> event1 = new FakeEvent<>(mockObject::getAsInt, ONE_HUNDRED_MILLIS);
+
+        // Fake an interrupt
+        Event<Integer> event2 = new FakeEvent<>(() -> {
+            multiEventThread.interrupt();
+            return 10;
+        }, FIFTY_MILLIS);
+
+        Integer result = new MultiEvent<>(event1, event2)
+                .waitUpTo(200, MILLIS);
+
+        Thread.interrupted(); // Clear interrupt so we can sleep.
+        Thread.sleep(200);    // Sleep so we can let threads finish if they weren't interrupted.
+
+        verifyZeroInteractions(mockObject);
+        assertNull("Expected waitUpTo to be interrupted and return null, but returned an event" +
+                "result.", result);
     }
 }
