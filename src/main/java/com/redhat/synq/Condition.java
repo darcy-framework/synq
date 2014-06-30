@@ -61,6 +61,20 @@ public interface Condition<T> {
     default PollEvent<T> asEvent() {
         return new DefaultPollEvent<T>(this);
     }
+
+    /**
+     * Converts this condition to an {@link Event} by polling at some default interval until the
+     * condition is met, and then firing the event.
+     * <P>
+     * Note that while polling is very flexible, it has significant reliability drawbacks when
+     * compared to true event listeners.
+     *
+     * @see {@link DefaultPollEvent}
+     * @return The condition as a {@link PollEvent}
+     */
+    default PollEvent<T> asEvent(TimeKeeper timeKeeper) {
+        return new DefaultPollEvent<T>(this, timeKeeper);
+    }
     
     static <T> Condition<T> match(Callable<T> item, CheckedPredicate<? super T> predicate) {
         return new AbstractCondition<T>() {
