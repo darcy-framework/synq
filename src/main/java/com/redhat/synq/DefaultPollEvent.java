@@ -68,10 +68,6 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
         Instant now;
         
         while (!met) {
-            if (Thread.currentThread().isInterrupted()) {
-                return null;
-            }
-
             now = timeKeeper.instant();
 
             if (now.isAfter(timeoutTime)

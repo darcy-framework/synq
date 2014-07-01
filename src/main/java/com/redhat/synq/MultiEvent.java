@@ -62,12 +62,10 @@ public class MultiEvent<T> extends AbstractEvent<T> {
             timedOut = !latch.await(duration.toMillis(), MILLISECONDS)
                     || throwable instanceof TimeoutException;
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-
             originalWaiter.interrupt();
             additionalWaiter.interrupt();
 
-            return null;
+            throw new SleepInterruptedException(e);
         }
 
         // We don't know which finished first so interrupt them both; it's harmless.

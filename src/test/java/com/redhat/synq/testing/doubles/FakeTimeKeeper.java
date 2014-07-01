@@ -74,12 +74,11 @@ public class FakeTimeKeeper extends TimeKeeper {
             ScheduledCallback e = callbackIterator.next();
 
             if (now.isAfter(e.instant) || now.equals(e.instant)) {
-                e.callback.run();
-
-                if (Thread.currentThread().isInterrupted()) {
-                    // The callback interrupted the thread... this would halt the sleep at the time
-                    // of the interrupt.
+                try {
+                    e.callback.run();
+                } catch (RuntimeException ex) {
                     now = e.instant;
+                    throw ex;
                 }
 
                 callbackIterator.remove();

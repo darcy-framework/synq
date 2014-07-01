@@ -36,12 +36,18 @@ public abstract class TimeKeeper extends Clock {
     /**
      * Pause execution for some duration, flagging the thread as interrupted if an interrupt should
      * occur.
+     *
+     * @throws SleepInterruptedException if thread was interrupted while waiting. If you don't want
+     * this to propagate you should catch this exception.
      */
     public abstract void sleepFor(Duration duration);
 
     /**
      * Pause execution for some duration, flagging the thread as interrupted if an interrupt should
      * occur.
+     *
+     * @throws SleepInterruptedException if thread was interrupted while waiting. If you don't want
+     * this to propagate you should catch this exception.
      */
     public void sleepFor(long amount, ChronoUnit unit) {
         sleepFor(Duration.of(amount, unit));
@@ -55,7 +61,7 @@ public abstract class TimeKeeper extends Clock {
             try {
                 Thread.sleep(duration.toMillis());
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                throw new SleepInterruptedException(e);
             }
         }
 

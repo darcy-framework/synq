@@ -20,6 +20,7 @@
 package com.redhat.synq;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
+import static junit.framework.Assert.fail;
 import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
@@ -165,14 +166,17 @@ public class MultiEventTest {
             return 10;
         }, FIFTY_MILLIS);
 
-        Integer result = new MultiEvent<>(event1, event2)
-                .waitUpTo(200, MILLIS);
+        try {
+            new MultiEvent<>(event1, event2)
+                    .waitUpTo(200, MILLIS);
 
-        Thread.interrupted(); // Clear interrupt so we can sleep.
-        Thread.sleep(200);    // Sleep so we can let threads finish if they weren't interrupted.
+            fail("MultiEvent did not propagate SleepInterruptedException.");
+        } catch (SleepInterruptedException expected) {
+            // fall through
+        }
+
+        Thread.sleep(200); // Sleep so we can let threads finish if they weren't interrupted.
 
         verifyZeroInteractions(mockObject);
-        assertNull("Expected waitUpTo to be interrupted and return null, but returned an event" +
-                "result.", result);
     }
 }

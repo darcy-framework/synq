@@ -80,18 +80,16 @@ public class DefaultPollEventTest {
                 .waitUpTo(50, MILLIS);
     }
 
-    @Test
-    public void shouldStopWaitingIfThreadIsInterrupted() {
-        timeKeeper.scheduleCallback(() -> Thread.currentThread().interrupt(), THIRTY_MILLIS);
+    @Test(expected = SleepInterruptedException.class)
+    public void shouldLetUncheckedInterruptedExceptionsPropagate() {
+        // Simulate the time keeper throwing an SleepInterruptedException (being interrupted)
+        timeKeeper.scheduleCallback(() -> { throw new SleepInterruptedException(); },
+                THIRTY_MILLIS);
 
         Instant start = timeKeeper.instant();
 
         new DefaultPollEvent<>(new NeverMetCondition(), timeKeeper)
-                .waitUpTo(50, MILLIS);
-
-        assertEquals(timeKeeper.instant(), start.plus(THIRTY_MILLIS));
-        assertTrue(Thread.interrupted()); // Clear interrupt intentional
-    }
+                .waitUpTo(50, MILLIS);    }
 
     @Test
     public void shouldReturnTheLastExaminedResultOfTheCondition() {

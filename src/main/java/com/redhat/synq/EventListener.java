@@ -40,9 +40,8 @@ public class EventListener<T> extends AbstractEvent<T> {
         try {
             timedOut = !latch.await(duration.toMillis(), MILLISECONDS);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             // TODO: Remove event listener
-            return null;
+            throw new SleepInterruptedException(e);
         }
         
         if (timedOut) {

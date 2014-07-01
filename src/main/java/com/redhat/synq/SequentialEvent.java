@@ -21,26 +21,34 @@ package com.redhat.synq;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 
 public class SequentialEvent<T> extends AbstractEvent<T> {
     protected final Event<?> original;
-    protected Event<? extends T> additional;
+    protected final Event<? extends T> additional;
+    protected final TimeKeeper timeKeeper;
     
     public SequentialEvent(Event<?> original, Event<? extends T> additional) {
-        this.original = original;
-        this.additional = additional;
+        this(original, additional, TimeKeeper.systemTimeKeeper());
+    }
+
+    public SequentialEvent(Event<?> original, Event<? extends T> additional,
+            TimeKeeper timeKeeper) {
+        this.original = Objects.requireNonNull(original, "original");
+        this.additional = Objects.requireNonNull(additional, "additional");
+        this.timeKeeper = Objects.requireNonNull(timeKeeper, "timeKeeper");
 
         describedAs(original + " and then " + additional);
     }
     
     @Override
     public T waitUpTo(Duration duration) {
-        Instant start = Instant.now();
+        Instant start = timeKeeper.instant();
 
         try {
             original.waitUpTo(duration);
 
-            Duration remaining = duration.minus(Duration.between(start, Instant.now()));
+            Duration remaining = duration.minus(Duration.between(start, timeKeeper.instant()));
 
             return additional.waitUpTo(remaining);
         } catch (TimeoutException t) {
@@ -50,30 +58,31 @@ public class SequentialEvent<T> extends AbstractEvent<T> {
     
     @Override
     public Event<T> after(Runnable action) {
-        return new SequentialEvent<>(original,
-                new SequentialEvent<>(new ActionEvent(action), additional));
+        return new SequentialEvent<T>(original,
+                new SequentialEvent<T>(new ActionEvent(action), additional, timeKeeper),
+                timeKeeper);
     }
     
     @Override
     public Event<T> or(Event<? extends T> event) {
-        return new SequentialEvent<>(original, new MultiEvent<T>(additional, event));
+        return new SequentialEvent<>(original, new MultiEvent<T>(additional, event), timeKeeper);
     }
     
     @Override
     public PollEvent<T> or(Condition<? extends T> condition) {
-        return new SequentialEventWithPollEvent<>(original, 
-                new MultiEventWithPollEvent<T>(additional, condition.asEvent()));
+        return new SequentialEventWithPollEvent<>(original,
+                new MultiEventWithPollEvent<T>(additional, condition.asEvent(timeKeeper)));
     }
     
     @Override
     public FailEvent<T> failIf(Event<?> failEvent) {
-        return new SequentialEventWithFailEvent<>(original, 
+        return new SequentialEventWithFailEvent<T>(original,
                 new MultiEventWithFailEvent<T>(additional, new ForwardingFailEvent<T>(failEvent)));
     }
     
     @Override
     public FailPollEvent<T> failIf(Condition<?> failCondition) {
-        PollEvent<?> failEvent = failCondition.asEvent();
+        PollEvent<?> failEvent = failCondition.asEvent(timeKeeper);
         
         return new SequentialEventWithFailPollEvent<T>(original, 
                 new MultiEventWithFailPollEvent<T>(additional, 
