@@ -55,6 +55,7 @@ public class MultiEventTest {
     private static final Duration THIRTY_MILLIS = Duration.ofMillis(30);
     private static final Duration FIFTY_MILLIS = Duration.ofMillis(50);
     private static final Duration ONE_HUNDRED_MILLIS = Duration.ofMillis(100);
+    private static final Duration FIVE_HUNDRED_MILLIS = Duration.ofMillis(100);
 
     @Test
     public void shouldReturnWhenOriginalEventOccurs() {
@@ -78,13 +79,13 @@ public class MultiEventTest {
     public void shouldInterruptEventsAfterOneOccurs() throws InterruptedException {
         IntSupplier mockObject = mock(IntSupplier.class);
 
-        Event<Integer> event1 = new FakeEvent<>(mockObject::getAsInt, ONE_HUNDRED_MILLIS);
+        Event<Integer> event1 = new FakeEvent<>(mockObject::getAsInt, FIVE_HUNDRED_MILLIS);
         Event<Object> event2 = new FakeEvent<>(FIFTY_MILLIS);
 
         new MultiEvent<>(event1, event2)
-                .waitUpTo(200, MILLIS);
+                .waitUpTo(1000, MILLIS);
 
-        Thread.sleep(400);
+        Thread.sleep(2000);
 
         verifyZeroInteractions(mockObject);
     }
