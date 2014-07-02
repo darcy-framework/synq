@@ -86,10 +86,9 @@ public class DefaultPollEventTest {
         timeKeeper.scheduleCallback(() -> { throw new SleepInterruptedException(); },
                 THIRTY_MILLIS);
 
-        Instant start = timeKeeper.instant();
-
         new DefaultPollEvent<>(new NeverMetCondition(), timeKeeper)
-                .waitUpTo(50, MILLIS);    }
+                .waitUpTo(50, MILLIS);
+    }
 
     @Test
     public void shouldReturnTheLastExaminedResultOfTheCondition() {
@@ -122,8 +121,8 @@ public class DefaultPollEventTest {
 
     @Test(expected = TestException.class)
     public void shouldThrowExceptionInConditionIfNotIgnored() {
-        Condition<Object> condition = new FakeCondition<Object>(
-                () -> { throw new TestException(); }, FIFTY_MILLIS, timeKeeper);
+        Condition<Object> condition = new FakeCondition<>(() -> { throw new TestException(); },
+                FIFTY_MILLIS, timeKeeper);
 
         new DefaultPollEvent<>(condition, timeKeeper)
                 .pollingEvery(10, MILLIS)
@@ -132,7 +131,7 @@ public class DefaultPollEventTest {
 
     @Test
     public void shouldNotThrowExceptionInConditionIfIgnored() {
-        Condition<Object> condition = new FakeCondition<Object>(
+        Condition<Object> condition = new FakeCondition<>(
                 () -> { throw new TestException(); }, FIFTY_MILLIS, timeKeeper);
 
         new DefaultPollEvent<>(condition, timeKeeper)

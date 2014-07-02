@@ -44,6 +44,7 @@ public class MultiEvent<T> extends AbstractEvent<T> {
 
     @Override
     public T waitUpTo(Duration duration) {
+        // Could using an executor service instead make testing easier?
         Thread originalWaiter = new Thread(() -> finishWithResult(original.waitUpTo(duration)));
         Thread additionalWaiter = new Thread(() -> finishWithResult(additional.waitUpTo(duration)));
 

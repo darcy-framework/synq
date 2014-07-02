@@ -19,7 +19,9 @@
 
 package com.redhat.synq;
 
-import static junit.framework.TestCase.assertEquals;
+import static java.time.temporal.ChronoUnit.MILLIS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
@@ -67,7 +69,7 @@ public class SequentialEventTest {
 
         try {
             new SequentialEvent<Object>(event1, event2)
-                    .waitUpTo(FIFTY_MILLIS);
+                    .waitUpTo(500, MILLIS);
         } catch (TimeoutException ignored) {
             // fall through
         }
@@ -82,7 +84,7 @@ public class SequentialEventTest {
         Event<Void> event2 = new NeverOccurringEvent();
 
         new SequentialEvent<>(event1, event2)
-                .waitUpTo(FIFTY_MILLIS);
+                .waitUpTo(200, MILLIS);
     }
 
     @Test(expected = TimeoutException.class)
@@ -91,7 +93,7 @@ public class SequentialEventTest {
         Event<Object> event2 = new FakeEvent<>(TEN_MILLIS);
 
         new SequentialEvent<>(event1, event2)
-                .waitUpTo(FIFTY_MILLIS);
+                .waitUpTo(200, MILLIS);
     }
 
     @Test
@@ -127,7 +129,7 @@ public class SequentialEventTest {
 
         try {
             new SequentialEvent<Object>(event1, event2)
-                    .waitUpTo(FIFTY_MILLIS);
+                    .waitUpTo(200, MILLIS);
         } catch (SleepInterruptedException expected) {
             // fall through
         }
@@ -158,5 +160,22 @@ public class SequentialEventTest {
 
         new SequentialEvent<>(event1, event2)
                 .waitUpTo(FIFTY_MILLIS);
+    }
+
+    @Test
+    public void shouldReturnNewSequentialEventWithSequentialEventAsSecondEventFromAfterClause() {
+        Event event1 = mock(Event.class);
+        Event event2 = mock(Event.class);
+        Runnable action = mock(Runnable.class);
+
+        SequentialEvent<Object> event = (SequentialEvent<Object>)
+                new SequentialEvent<Object>(event1, event2).after(action);
+        SequentialEvent<Object> additional = (SequentialEvent<Object>) event.additional;
+
+        assertSame(event1, event.original);
+        assertSame(additional.additional, event2);
+
+        additional.original.waitUpTo(TEN_MILLIS);
+        verify(action).run();
     }
 }
