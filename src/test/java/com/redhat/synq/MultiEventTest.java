@@ -141,13 +141,13 @@ public class MultiEventTest {
                 () -> { throw new TestTimeoutException(); }, FIFTY_MILLIS);
 
         // This won't occur because of faked timeout
-        Event<Void> event2 = new FakeEvent<>(ONE_HUNDRED_MILLIS);
+        Event<Void> event2 = new FakeEvent<>(Duration.of(200, MILLIS));
 
         expectedException.expect(not(instanceOf(TestTimeoutException.class)));
         expectedException.expect(TimeoutException.class);
 
         new MultiEvent<>(event1, event2)
-                .waitUpTo(200, MILLIS);
+                .waitUpTo(400, MILLIS);
     }
 
     @Test
