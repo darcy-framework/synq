@@ -46,32 +46,18 @@ public final class Synq {
     }
 
     public static <T> PollEvent<T> expect(T item, CheckedPredicate<? super T> predicate) {
-        return expect(new Callable<T>() {
-
-            @Override
-            public T call() throws Exception {
-                return item;
-            }
-
-        }, predicate);
+        return expectCallTo(() -> item, predicate);
     }
 
-    public static <T> PollEvent<T> expect(Callable<T> item, CheckedPredicate<? super T> predicate) {
-        return expect(Condition.match(item, predicate));
+    public static <T> PollEvent<T> expectCallTo(Callable<T> item, CheckedPredicate<? super T> predicate) {
+        return expect(Condition.matchCallTo(item, predicate));
     }
 
     public static <T> PollEvent<T> expect(T item, Matcher<? super T> matcher) {
-        return expect(new Callable<T>() {
-
-            @Override
-            public T call() throws Exception {
-                return item;
-            }
-
-        }, matcher);
+        return expectCallTo(() -> item, matcher);
     }
 
-    public static <T> PollEvent<T> expect(Callable<T> item, Matcher<? super T> matcher) {
+    public static <T> PollEvent<T> expectCallTo(Callable<T> item, Matcher<? super T> matcher) {
         return expect(new HamcrestCondition<>(item, matcher));
     }
 
@@ -88,32 +74,18 @@ public final class Synq {
     }
 
     public static <T> FailPollEvent<T> failIf(T item, CheckedPredicate<? super T> predicate) {
-        return failIf(new Callable<T>() {
-
-            @Override
-            public T call() throws Exception {
-                return item;
-            }
-
-        }, predicate);
+        return failIfCallTo(() -> item, predicate);
     }
 
-    public static <T> FailPollEvent<T> failIf(Callable<T> item, CheckedPredicate<? super T> predicate) {
-        return failIf(Condition.match(item, predicate));
+    public static <T> FailPollEvent<T> failIfCallTo(Callable<T> item, CheckedPredicate<? super T> predicate) {
+        return failIf(Condition.matchCallTo(item, predicate));
     }
 
     public static <T> FailPollEvent<T> failIf(T item, Matcher<? super T> matcher) {
-        return failIf(new Callable<T>() {
-
-            @Override
-            public T call() throws Exception {
-                return item;
-            }
-
-        }, matcher);
+        return failIfCallTo(() -> item, matcher);
     }
 
-    public static <T> FailPollEvent<T> failIf(Callable<T> item, Matcher<? super T> matcher) {
+    public static <T> FailPollEvent<T> failIfCallTo(Callable<T> item, Matcher<? super T> matcher) {
         return failIf(new HamcrestCondition<>(item, matcher));
     }
 
@@ -144,32 +116,18 @@ public final class Synq {
         }
 
         public <T> PollEvent<T> expect(T item, CheckedPredicate<? super T> predicate) {
-            return expect(new Callable<T>() {
-
-                @Override
-                public T call() throws Exception {
-                    return item;
-                }
-
-            }, predicate);
+            return expectCallTo(() -> item, predicate);
         }
 
-        public <T> PollEvent<T> expect(Callable<T> item, CheckedPredicate<? super T> predicate) {
-            return expect(Condition.match(item, predicate));
+        public <T> PollEvent<T> expectCallTo(Callable<T> item, CheckedPredicate<? super T> predicate) {
+            return expect(Condition.matchCallTo(item, predicate));
         }
 
         public <T> PollEvent<T> expect(T item, Matcher<? super T> matcher) {
-            return expect(new Callable<T>() {
-
-                @Override
-                public T call() throws Exception {
-                    return item;
-                }
-
-            }, matcher);
+            return expectCallTo(() -> item, matcher);
         }
 
-        public <T> PollEvent<T> expect(Callable<T> item, Matcher<? super T> matcher) {
+        public <T> PollEvent<T> expectCallTo(Callable<T> item, Matcher<? super T> matcher) {
             return expect(new HamcrestCondition<>(item, matcher));
         }
 
@@ -186,32 +144,18 @@ public final class Synq {
         }
 
         public <T> FailPollEvent<T> failIf(T item, CheckedPredicate<? super T> predicate) {
-            return failIf(new Callable<T>() {
-
-                @Override
-                public T call() throws Exception {
-                    return item;
-                }
-
-            }, predicate);
+            return failIfCallTo(() -> item, predicate);
         }
 
-        public <T> FailPollEvent<T> failIf(Callable<T> item, CheckedPredicate<? super T> predicate) {
-            return failIf(Condition.match(item, predicate));
+        public <T> FailPollEvent<T> failIfCallTo(Callable<T> item, CheckedPredicate<? super T> predicate) {
+            return failIf(Condition.matchCallTo(item, predicate));
         }
 
         public <T> FailPollEvent<T> failIf(T item, Matcher<? super T> matcher) {
-            return failIf(new Callable<T>() {
-
-                @Override
-                public T call() throws Exception {
-                    return item;
-                }
-
-            }, matcher);
+            return failIfCallTo(() -> item, matcher);
         }
 
-        public <T> FailPollEvent<T> failIf(Callable<T> item, Matcher<? super T> matcher) {
+        public <T> FailPollEvent<T> failIfCallTo(Callable<T> item, Matcher<? super T> matcher) {
             return failIf(new HamcrestCondition<>(item, matcher));
         }
     }

@@ -76,7 +76,7 @@ public interface Condition<T> {
         return new DefaultPollEvent<T>(this, timeKeeper);
     }
     
-    static <T> Condition<T> match(Callable<T> item, CheckedPredicate<? super T> predicate) {
+    static <T> Condition<T> matchCallTo(Callable<T> item, CheckedPredicate<? super T> predicate) {
         return new AbstractCondition<T>() {
             private T lastResult = null;
             
@@ -101,7 +101,7 @@ public interface Condition<T> {
     }
     
     static <T> Condition<T> match(T item, CheckedPredicate<? super T> predicate) {
-        return match(new Callable<T>() {
+        return matchCallTo(new Callable<T>() {
             
             @Override
             public T call() throws Exception {

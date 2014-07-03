@@ -36,7 +36,7 @@ public class HamcrestCondition<T> extends AbstractCondition<T> {
     private Matcher<? super T> matcher;
     private T lastResult = null;
     
-    public static <T> HamcrestCondition<T> match(Callable<T> item, Matcher<? super T> matcher) {
+    public static <T> HamcrestCondition<T> matchCallTo(Callable<T> item, Matcher<? super T> matcher) {
         return new HamcrestCondition<T>(item, matcher);
     }
 

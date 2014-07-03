@@ -146,32 +146,18 @@ public interface Event<T> {
     }
 
     default PollEvent<T> or(T item, CheckedPredicate<? super T> predicate) {
-        return or(new Callable<T>() {
-
-            @Override
-            public T call() throws Exception {
-                return item;
-            }
-
-        }, predicate);
+        return orCallTo(() -> item, predicate);
     }
 
-    default PollEvent<T> or(Callable<T> item, CheckedPredicate<? super T> predicate) {
-        return or(Condition.match(item, predicate));
+    default PollEvent<T> orCallTo(Callable<T> item, CheckedPredicate<? super T> predicate) {
+        return or(Condition.matchCallTo(item, predicate));
     }
 
     default PollEvent<T> or(T item, Matcher<? super T> matcher) {
-        return or(new Callable<T>() {
-
-            @Override
-            public T call() throws Exception {
-                return item;
-            }
-
-        }, matcher);
+        return orCallTo(() -> item, matcher);
     }
 
-    default PollEvent<T> or(Callable<T> item, Matcher<? super T> matcher) {
+    default PollEvent<T> orCallTo(Callable<T> item, Matcher<? super T> matcher) {
         return or(new HamcrestCondition<>(item, matcher));
     }
 
@@ -194,32 +180,18 @@ public interface Event<T> {
     }
 
     default <R> FailPollEvent<T> failIf(R item, CheckedPredicate<? super R> predicate) {
-        return failIf(new Callable<R>() {
-
-            @Override
-            public R call() throws Exception {
-                return item;
-            }
-
-        }, predicate);
+        return failIfCallTo(() -> item, predicate);
     }
 
-    default <R> FailPollEvent<T> failIf(Callable<R> item, CheckedPredicate<? super R> predicate) {
-        return failIf(Condition.match(item, predicate));
+    default <R> FailPollEvent<T> failIfCallTo(Callable<R> item, CheckedPredicate<? super R> predicate) {
+        return failIf(Condition.matchCallTo(item, predicate));
     }
 
     default <R> FailPollEvent<T> failIf(R item, Matcher<? super R> matcher) {
-        return failIf(new Callable<R>() {
-
-            @Override
-            public R call() throws Exception {
-                return item;
-            }
-
-        }, matcher);
+        return failIfCallTo(() -> item, matcher);
     }
 
-    default <R> FailPollEvent<T> failIf(Callable<R> item, Matcher<? super R> matcher) {
+    default <R> FailPollEvent<T> failIfCallTo(Callable<R> item, Matcher<? super R> matcher) {
         return failIf(new HamcrestCondition<>(item, matcher));
     }
 
@@ -254,41 +226,28 @@ public interface Event<T> {
      * @see #andThenExpect(Condition)
      */
     default <U> PollEvent<U> andThenExpect(U item, CheckedPredicate<? super U> predicate) {
-        return andThenExpect(new Callable<U>() {
-
-            @Override
-            public U call() throws Exception {
-                return item;
-            }
-
-        }, predicate);
+        return andThenExpectCallTo(() -> item, predicate);
     }
 
     /**
      * @see #andThenExpect(Condition)
      */
-    default <U> PollEvent<U> andThenExpect(Callable<U> item, CheckedPredicate<? super U> predicate) {
-        return andThenExpect(Condition.match(item, predicate));
+    default <U> PollEvent<U> andThenExpectCallTo(Callable<U> item,
+            CheckedPredicate<? super U> predicate) {
+        return andThenExpect(Condition.matchCallTo(item, predicate));
     }
 
     /**
      * @see #andThenExpect(Condition)
      */
     default <U> PollEvent<U> andThenExpect(U item, Matcher<? super U> matcher) {
-        return andThenExpect(new Callable<U>() {
-
-            @Override
-            public U call() throws Exception {
-                return item;
-            }
-
-        }, matcher);
+        return andThenExpectCallTo(() -> item, matcher);
     }
 
     /**
      * @see #andThenExpect(Condition)
      */
-    default <U> PollEvent<U> andThenExpect(Callable<U> item, Matcher<? super U> matcher) {
+    default <U> PollEvent<U> andThenExpectCallTo(Callable<U> item, Matcher<? super U> matcher) {
         return andThenExpect(new HamcrestCondition<>(item, matcher));
     }
 }
