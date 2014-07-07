@@ -41,7 +41,10 @@ public class HamcrestCondition<T> extends AbstractCondition<T> {
     }
 
     public static <T> HamcrestCondition<T> match(T item, Matcher<? super T> matcher) {
-        return new HamcrestCondition<T>(() -> item, matcher);
+        return new HamcrestCondition<T>(new Callable<T>() {
+            @Override public T call() { return item; }
+            @Override public String toString() { return item.toString(); }
+        }, matcher);
     }
     
     public static <T> HamcrestCondition<T> isTrueOrNonNull(Callable<T> item) {
@@ -67,6 +70,8 @@ public class HamcrestCondition<T> extends AbstractCondition<T> {
     public boolean isMet() {
         try {
             lastResult = item.call();
+
+            describedAs(lastResult + " to be " + matcher.toString());
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
