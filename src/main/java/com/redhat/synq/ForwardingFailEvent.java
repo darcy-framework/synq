@@ -22,6 +22,7 @@ package com.redhat.synq;
 import static com.redhat.synq.ThrowableUtil.throwUnchecked;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 /**
  * Essentially transforms an event to its "inverse." See {@link FailEvent} javadoc.
@@ -62,6 +63,7 @@ public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEven
         return null;
     }
 
+    @Override
     public FailEvent<T> throwing(Throwable throwable) {
         this.throwable = throwable;
 
@@ -70,6 +72,13 @@ public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEven
 
     @Override
     public FailEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
+        return this;
+    }
+
+    @Override
+    public FailEvent<T> describedAs(Supplier<String> description) {
         super.describedAs(description);
 
         return this;

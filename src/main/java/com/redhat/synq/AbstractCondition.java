@@ -19,11 +19,13 @@
 
 package com.redhat.synq;
 
+import java.util.function.Supplier;
+
 public abstract class AbstractCondition<T> implements Condition<T> {
-    private String description = super.toString();
+    private Supplier<String> description = super::toString;
 
     @Override
-    public Condition<T> describedAs(String description) {
+    public Condition<T> describedAs(Supplier<String> description) {
         this.description = description;
 
         return this;
@@ -31,6 +33,6 @@ public abstract class AbstractCondition<T> implements Condition<T> {
 
     @Override
     public String toString() {
-        return description;
+        return description.get();
     }
 }

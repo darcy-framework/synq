@@ -20,6 +20,7 @@
 package com.redhat.synq;
 
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 public interface Condition<T> {
     /**
@@ -46,7 +47,11 @@ public interface Condition<T> {
      */
     T lastResult();
 
-    Condition<T> describedAs(String description);
+    default Condition<T> describedAs(String description) {
+        return describedAs(() -> description);
+    }
+
+    Condition<T> describedAs(Supplier<String> description);
     
     /**
      * Converts this condition to an {@link Event} by polling at some default interval until the
@@ -97,7 +102,7 @@ public interface Condition<T> {
                 return lastResult;
             }
 
-        }.describedAs(item + " to satisfy " + predicate);
+        }.describedAs(() -> item + " to satisfy " + predicate);
     }
     
     static <T> Condition<T> match(T item, CheckedPredicate<? super T> predicate) {

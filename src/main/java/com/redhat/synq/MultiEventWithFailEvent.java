@@ -19,6 +19,8 @@
 
 package com.redhat.synq;
 
+import java.util.function.Supplier;
+
 public class MultiEventWithFailEvent<T> extends MultiEvent<T> implements FailEvent<T> {
     
     public MultiEventWithFailEvent(Event<? extends T> original, FailEvent<? extends T> additional) {
@@ -36,6 +38,14 @@ public class MultiEventWithFailEvent<T> extends MultiEvent<T> implements FailEve
     @SuppressWarnings("unchecked")
     @Override
     public FailEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailEvent<T> describedAs(Supplier<String> description) {
         super.describedAs(description);
 
         return this;

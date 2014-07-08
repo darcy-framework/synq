@@ -23,8 +23,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
-public class DefaultPollEvent<T> implements PollEvent<T> {
+public class DefaultPollEvent<T> extends AbstractEvent<T> implements PollEvent<T> {
     private static final Duration DEFAULT_POLLING_INTERVAL = Duration.ofSeconds(1);
 
     private final Condition<T> condition;
@@ -55,6 +56,13 @@ public class DefaultPollEvent<T> implements PollEvent<T> {
 
     @Override
     public PollEvent<T> describedAs(String description) {
+        condition.describedAs(description);
+
+        return this;
+    }
+
+    @Override
+    public PollEvent<T> describedAs(Supplier<String> description) {
         condition.describedAs(description);
 
         return this;

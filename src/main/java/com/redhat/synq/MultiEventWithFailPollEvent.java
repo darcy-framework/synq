@@ -20,6 +20,7 @@
 package com.redhat.synq;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 public class MultiEventWithFailPollEvent<T> extends MultiEvent<T> implements FailPollEvent<T> {
     
@@ -55,6 +56,14 @@ public class MultiEventWithFailPollEvent<T> extends MultiEvent<T> implements Fai
     @SuppressWarnings("unchecked")
     @Override
     public FailPollEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailPollEvent<T> describedAs(Supplier<String> description) {
         super.describedAs(description);
 
         return this;

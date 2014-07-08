@@ -1,6 +1,7 @@
 package com.redhat.synq;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 public class ForwardingPollEvent<T> implements PollEvent<T> {
     protected final PollEvent<T> event;
@@ -26,6 +27,11 @@ public class ForwardingPollEvent<T> implements PollEvent<T> {
 
     @Override
     public PollEvent<T> describedAs(String description) {
+        return event.describedAs(description);
+    }
+
+    @Override
+    public PollEvent<T> describedAs(Supplier<String> description) {
         return event.describedAs(description);
     }
 

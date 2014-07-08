@@ -24,6 +24,7 @@ import org.hamcrest.Matcher;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 /**
  * An Event represents something that may happen in the future, and can be awaited. Awaiting that
@@ -78,7 +79,23 @@ public interface Event<T> {
      * @param description A description that works well with a timeout message. That is, it should
      * fit grammatically in the sentence, "Timed out after ${duration} waiting for ${description}."
      */
-    Event<T> describedAs(String description);
+    default Event<T> describedAs(String description) {
+        return describedAs(() -> description);
+    }
+
+    /**
+     * Most Event objects are constructed in a such a way that it is difficult to programmatically
+     * determine an appropriate description to return for {@link #toString()}. The description in
+     * this message will change the output of {@link #toString()} to <code>description</code>.
+     *
+     * <p>The output of {@link #toString()} is what is used in
+     * {@link com.redhat.synq.TimeoutException TimeoutExceptions}, in the form, "Timed out after
+     * ${duration} waiting for ${event.toString()}."
+     *
+     * @param description A description that works well with a timeout message. That is, it should
+     * fit grammatically in the sentence, "Timed out after ${duration} waiting for ${description}."
+     */
+    Event<T> describedAs(Supplier<String> description);
 
     /**
      * Returns the description of the event. Depending on the implementation, a readable description

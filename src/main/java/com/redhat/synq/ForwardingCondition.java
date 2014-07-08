@@ -19,6 +19,8 @@
 
 package com.redhat.synq;
 
+import java.util.function.Supplier;
+
 public class ForwardingCondition<T> implements Condition<T> {
     private final Condition<T> condition;
     
@@ -38,6 +40,11 @@ public class ForwardingCondition<T> implements Condition<T> {
 
     @Override
     public Condition<T> describedAs(String description) {
+        return condition.describedAs(description);
+    }
+
+    @Override
+    public Condition<T> describedAs(Supplier<String> description) {
         return condition.describedAs(description);
     }
 

@@ -20,6 +20,7 @@
 package com.redhat.synq;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 public class ForwardingEvent<T> implements Event<T> {
     protected final Event<T> event;
@@ -35,6 +36,11 @@ public class ForwardingEvent<T> implements Event<T> {
 
     @Override
     public Event<T> describedAs(String description) {
+        return event.describedAs(description);
+    }
+
+    @Override
+    public Event<T> describedAs(Supplier<String> description) {
         return event.describedAs(description);
     }
 

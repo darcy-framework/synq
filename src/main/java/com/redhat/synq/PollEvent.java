@@ -21,6 +21,7 @@ package com.redhat.synq;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.function.Supplier;
 
 public interface PollEvent<T> extends Event<T> {
     default PollEvent<T> pollingEvery(long amount, ChronoUnit unit) {
@@ -33,6 +34,9 @@ public interface PollEvent<T> extends Event<T> {
 
     @Override
     PollEvent<T> describedAs(String description);
+
+    @Override
+    PollEvent<T> describedAs(Supplier<String> description);
     
     @Override
     default PollEvent<T> after(Runnable action) {

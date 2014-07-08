@@ -20,6 +20,7 @@
 package com.redhat.synq;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 public class MultiEventWithPollEvent<T> extends MultiEvent<T> implements PollEvent<T> {
     
@@ -46,6 +47,14 @@ public class MultiEventWithPollEvent<T> extends MultiEvent<T> implements PollEve
     @SuppressWarnings("unchecked")
     @Override
     public PollEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public PollEvent<T> describedAs(Supplier<String> description) {
         super.describedAs(description);
 
         return this;

@@ -19,6 +19,8 @@
 
 package com.redhat.synq;
 
+import java.util.function.Supplier;
+
 public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implements FailEvent<T> {
     
     public SequentialEventWithFailEvent(Event<?> original, FailEvent<? extends T> additional) {
@@ -44,6 +46,14 @@ public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implemen
     @SuppressWarnings("unchecked")
     @Override
     public FailEvent<T> describedAs(String description) {
+        super.describedAs(description);
+
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailEvent<T> describedAs(Supplier<String> description) {
         super.describedAs(description);
 
         return this;

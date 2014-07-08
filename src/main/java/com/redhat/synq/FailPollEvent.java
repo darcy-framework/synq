@@ -19,12 +19,17 @@
 
 package com.redhat.synq;
 
+import java.util.function.Supplier;
+
 public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
     @Override
     FailPollEvent<T> throwing(Throwable throwable);
 
     @Override
     FailPollEvent<T> describedAs(String description);
+
+    @Override
+    FailPollEvent<T> describedAs(Supplier<String> description);
     
     @Override
     default FailPollEvent<T> after(Runnable action) {

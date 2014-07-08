@@ -63,7 +63,7 @@ public class HamcrestCondition<T> extends AbstractCondition<T> {
         this.item = item;
         this.matcher = matcher;
 
-        describedAs(item + " to be " + matcher.toString());
+        describedAs(() -> item + " to be " + matcher.toString());
     }
 
     @Override

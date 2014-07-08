@@ -19,16 +19,18 @@
 
 package com.redhat.synq;
 
+import java.util.function.Supplier;
+
 /**
  * Provides default implementations of {@link #describedAs(String)} and {@link #toString()}. If an
  * implementation can provide a somewhat useful description automatically, it should do so by
  * calling {@link #describedAs(String)} itself.
  */
 public abstract class AbstractEvent<T> implements Event<T> {
-    private String description = super.toString();
+    private Supplier<String> description = super::toString;
 
     @Override
-    public Event<T> describedAs(String description) {
+    public Event<T> describedAs(Supplier<String> description) {
         this.description = description;
 
         return this;
@@ -36,6 +38,6 @@ public abstract class AbstractEvent<T> implements Event<T> {
 
     @Override
     public String toString() {
-        return description;
+        return description.get();
     }
 }

@@ -19,6 +19,8 @@
 
 package com.redhat.synq;
 
+import java.util.function.Supplier;
+
 /**
  * Fail events should, instead of returning some value when they are triggered, throw an exception.
  * When their timeout is reached, they should simply return null (as opposed to throwing a timeout
@@ -35,6 +37,9 @@ public interface FailEvent<T> extends Event<T> {
 
     @Override
     FailEvent<T> describedAs(String description);
+
+    @Override
+    FailEvent<T> describedAs(Supplier<String> description);
     
     @Override
     default FailEvent<T> after(Runnable action) {
