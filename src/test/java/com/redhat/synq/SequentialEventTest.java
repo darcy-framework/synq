@@ -53,7 +53,7 @@ public class SequentialEventTest {
     private static final Duration FIFTY_MILLIS = Duration.ofMillis(50);
     private static final Duration ONE_HUNDRED_MILLIS = Duration.ofMillis(100);
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void shouldReturnOnceBothEventsOccur() {
         Event<Object> event1 = new FakeEvent<>(TEN_MILLIS);
         Event<Object> event2 = new FakeEvent<>(THIRTY_MILLIS);
@@ -62,7 +62,7 @@ public class SequentialEventTest {
                 .waitUpTo(FIFTY_MILLIS);
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void shouldNotWaitForSecondEventIfFirstEventNeverOccurs() {
         Event<Void> event1 = new NeverOccurringEvent();
         Event event2 = mock(Event.class);
