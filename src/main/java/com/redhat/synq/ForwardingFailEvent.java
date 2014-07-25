@@ -26,10 +26,6 @@ import java.util.function.Supplier;
 
 /**
  * Essentially transforms an event to its "inverse." See {@link FailEvent} javadoc.
- * 
- * @author ahenning
- *
- * @param <T>
  */
 public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEvent<T> {
     protected Event<?> original;
