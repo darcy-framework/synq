@@ -53,7 +53,7 @@ public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEven
         if (!Thread.currentThread().isInterrupted()) {
             // If we got here, then we got a result before the timeout. For a fail event, this is
             // the condition to throw the associated exception.
-            throwUnchecked(throwable);
+            throwUnchecked(throwable.fillInStackTrace());
         }
         
         return null;
