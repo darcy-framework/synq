@@ -21,12 +21,18 @@ package com.redhat.synq;
 
 public class FailEventException extends RuntimeException {
     private static final long serialVersionUID = -7740040718087166163L;
-
-    public FailEventException(Condition<?> cause) {
-        super(cause.toString());
-    }
+    private Event<?> event;
     
-    public FailEventException(Event<?> cause) {
-        super(cause.toString());
+    public FailEventException(Event<?> event) {
+        this.event = event;
+    }
+
+    public Event<?> getEvent() {
+        return event;
+    }
+
+    @Override
+    public String getMessage() {
+        return "Fail event occurred: " + event;
     }
 }
