@@ -23,7 +23,6 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import com.redhat.synq.testing.TestException;
 import com.redhat.synq.testing.doubles.FakeCondition;
@@ -38,7 +37,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.time.Duration;
-import java.time.Instant;
 
 @RunWith(JUnit4.class)
 public class DefaultPollEventTest {
