@@ -33,7 +33,6 @@ public class MultiEvent<T> extends AbstractEvent<T> {
     private Throwable throwable;
     private UncaughtExceptionHandler exceptionHandler = new MultiEventExceptionHandler();
     private CountDownLatch latch = new CountDownLatch(1);
-    private boolean timedOut = false;
 
     public MultiEvent(Event<? extends T> original, Event<? extends T> additional) {
         this.original = original;
@@ -54,7 +53,7 @@ public class MultiEvent<T> extends AbstractEvent<T> {
         originalWaiter.start();
         additionalWaiter.start();
 
-        timedOut = false;
+        boolean timedOut;
 
         try {
             // Also check for TimeoutExceptions from the inner events themselves. If either of their
