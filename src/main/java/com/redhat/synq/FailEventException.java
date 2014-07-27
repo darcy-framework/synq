@@ -33,6 +33,6 @@ public class FailEventException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return "Fail event occurred: " + event;
+        return event.toString();
     }
 }
