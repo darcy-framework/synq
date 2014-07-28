@@ -25,11 +25,11 @@ import java.util.function.Supplier;
 public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implements FailPollEvent<T> {
     
     public ForwardingFailPollEvent(PollEvent<?> original) {
-        super(original);
+        super(original.ignoring(Exception.class));
     }
     
     public ForwardingFailPollEvent(PollEvent<?> original, Throwable throwable) {
-        super(original, throwable);
+        super(original.ignoring(Exception.class), throwable);
     }
 
     @SuppressWarnings("unchecked")
