@@ -45,6 +45,14 @@ public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implemen
 
     @SuppressWarnings("unchecked")
     @Override
+    public FailEvent<T> throwing(Supplier<Throwable> throwable) {
+        ((FailEvent<T>) additional).throwing(throwable);
+
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public FailEvent<T> describedAs(String description) {
         super.describedAs(description);
 

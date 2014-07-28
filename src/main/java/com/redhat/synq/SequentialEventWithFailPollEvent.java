@@ -44,6 +44,13 @@ public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> impl
         ((FailEvent<T>) additional).throwing(throwable);
         return this;
     }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public FailPollEvent<T> throwing(Supplier<Throwable> throwable) {
+        ((FailEvent<T>) additional).throwing(throwable);
+        return this;
+    }
     
     @SuppressWarnings("unchecked")
     @Override

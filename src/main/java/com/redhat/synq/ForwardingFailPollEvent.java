@@ -56,6 +56,13 @@ public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implement
     }
 
     @Override
+    public FailPollEvent<T> throwing(Supplier<Throwable> throwable) {
+        super.throwing(throwable);
+
+        return this;
+    }
+
+    @Override
     public FailPollEvent<T> describedAs(String description) {
         super.describedAs(description);
 

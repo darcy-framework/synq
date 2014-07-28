@@ -26,6 +26,9 @@ public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
     FailPollEvent<T> throwing(Throwable throwable);
 
     @Override
+    FailPollEvent<T> throwing(Supplier<Throwable> throwable);
+
+    @Override
     FailPollEvent<T> describedAs(String description);
 
     @Override

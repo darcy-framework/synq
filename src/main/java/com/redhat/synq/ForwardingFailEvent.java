@@ -29,15 +29,18 @@ import java.util.function.Supplier;
  */
 public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEvent<T> {
     protected Event<?> original;
-    private Throwable throwable;
+    private Supplier<Throwable> throwable;
     
     public ForwardingFailEvent(Event<?> original) {
-        this(original, new FailEventException(original));
+        this.original = original;
+
+        throwing(() -> new FailEventException(original));
     }
     
     public ForwardingFailEvent(Event<?> original, Throwable throwable) {
         this.original = original;
-        this.throwable = throwable;
+
+        throwing(throwable);
     }
     
     @Override
@@ -53,14 +56,14 @@ public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEven
         if (!Thread.currentThread().isInterrupted()) {
             // If we got here, then we got a result before the timeout. For a fail event, this is
             // the condition to throw the associated exception.
-            throwUnchecked(throwable.fillInStackTrace());
+            throw throwUnchecked(throwable.get());
         }
-        
+
         return null;
     }
 
     @Override
-    public FailEvent<T> throwing(Throwable throwable) {
+    public FailEvent<T> throwing(Supplier<Throwable> throwable) {
         this.throwable = throwable;
 
         return this;

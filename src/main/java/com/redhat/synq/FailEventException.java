@@ -24,15 +24,12 @@ public class FailEventException extends RuntimeException {
     private Event<?> event;
     
     public FailEventException(Event<?> event) {
+        super(event.toString());
+
         this.event = event;
     }
 
     public Event<?> getEvent() {
         return event;
-    }
-
-    @Override
-    public String getMessage() {
-        return event.toString();
     }
 }

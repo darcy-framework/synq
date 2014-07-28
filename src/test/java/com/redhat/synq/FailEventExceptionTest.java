@@ -34,13 +34,13 @@ public class FailEventExceptionTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void shouldEvaluateDetailMessageWhenItIsThrown() {
+    public void shouldUseEventToStringAsDetailMessageWhenCreated() {
         Event mockEvent = mock(Event.class);
-        when(mockEvent.toString()).thenReturn("should not return");
+        when(mockEvent.toString()).thenReturn("should return");
 
         FailEventException e = new FailEventException(mockEvent);
 
-        when(mockEvent.toString()).thenReturn("should return");
+        when(mockEvent.toString()).thenReturn("should not return");
 
         expectedException.expectMessage("should return");
 

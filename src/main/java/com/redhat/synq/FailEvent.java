@@ -33,7 +33,19 @@ import java.util.function.Supplier;
  * @see ForwardingFailEvent
  */
 public interface FailEvent<T> extends Event<T> {
-    FailEvent<T> throwing(Throwable throwable);
+    /**
+     * Grabs a throwable from the supplier at the time of failure. Useful for detail messages that
+     * need to be evaluated at the time of failure. If your exception does not depend on this
+     * behavior, it may be simpler to use {@link #throwing(Throwable)}.
+     */
+    FailEvent<T> throwing(Supplier<Throwable> throwable);
+
+    /**
+     * Throws a specific exception instance. Fills in the stack trace at the time it is thrown.
+     */
+    default FailEvent<T> throwing(Throwable throwable) {
+        return throwing(throwable::fillInStackTrace);
+    }
 
     @Override
     FailEvent<T> describedAs(String description);
