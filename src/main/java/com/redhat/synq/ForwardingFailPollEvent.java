@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implements FailPollEvent<T> {
     
     public ForwardingFailPollEvent(PollEvent<?> original) {
-        this(original, new FailEventException(original));
+        super(original);
     }
     
     public ForwardingFailPollEvent(PollEvent<?> original, Throwable throwable) {
