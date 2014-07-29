@@ -22,6 +22,7 @@ package com.redhat.synq;
 import static com.redhat.synq.ThrowableUtil.throwUnchecked;
 
 import java.time.Duration;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -29,12 +30,10 @@ import java.util.function.Supplier;
  */
 public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEvent<T> {
     protected Event<?> original;
-    private Supplier<Throwable> throwable;
+    private Function<AssertionError, Throwable> throwable;
     
     public ForwardingFailEvent(Event<?> original) {
         this.original = original;
-
-        throwing(() -> new FailEventException(original));
     }
     
     public ForwardingFailEvent(Event<?> original, Throwable throwable) {
@@ -56,14 +55,22 @@ public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEven
         if (!Thread.currentThread().isInterrupted()) {
             // If we got here, then we got a result before the timeout. For a fail event, this is
             // the condition to throw the associated exception.
-            throw throwUnchecked(throwable.get().fillInStackTrace());
+
+            // TODO: Build assertion error message
+            AssertionError e = new AssertionError();
+
+            if (throwable != null) {
+                throwUnchecked(throwable.apply(e).fillInStackTrace());
+            } else {
+                throw e;
+            }
         }
 
         return null;
     }
 
     @Override
-    public FailEvent<T> throwing(Supplier<Throwable> throwable) {
+    public FailEvent<T> throwing(Function<AssertionError, Throwable> throwable) {
         this.throwable = throwable;
 
         return this;

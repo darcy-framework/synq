@@ -20,6 +20,7 @@
 package com.redhat.synq;
 
 import java.time.Duration;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> implements
@@ -47,7 +48,7 @@ public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> impl
 
     @SuppressWarnings("unchecked")
     @Override
-    public FailPollEvent<T> throwing(Supplier<Throwable> throwable) {
+    public FailPollEvent<T> throwing(Function<AssertionError, Throwable> throwable) {
         ((FailEvent<T>) additional).throwing(throwable);
         return this;
     }

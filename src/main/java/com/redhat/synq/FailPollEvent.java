@@ -19,6 +19,7 @@
 
 package com.redhat.synq;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
@@ -26,7 +27,7 @@ public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
     FailPollEvent<T> throwing(Throwable throwable);
 
     @Override
-    FailPollEvent<T> throwing(Supplier<Throwable> throwable);
+    FailPollEvent<T> throwing(Function<AssertionError, Throwable> throwable);
 
     @Override
     FailPollEvent<T> describedAs(String description);

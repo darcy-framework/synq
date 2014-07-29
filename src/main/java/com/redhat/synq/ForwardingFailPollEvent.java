@@ -20,6 +20,7 @@
 package com.redhat.synq;
 
 import java.time.Duration;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implements FailPollEvent<T> {
@@ -56,7 +57,7 @@ public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implement
     }
 
     @Override
-    public FailPollEvent<T> throwing(Supplier<Throwable> throwable) {
+    public FailPollEvent<T> throwing(Function<AssertionError, Throwable> throwable) {
         super.throwing(throwable);
 
         return this;

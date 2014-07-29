@@ -19,6 +19,7 @@
 
 package com.redhat.synq;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implements FailEvent<T> {
@@ -45,7 +46,7 @@ public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implemen
 
     @SuppressWarnings("unchecked")
     @Override
-    public FailEvent<T> throwing(Supplier<Throwable> throwable) {
+    public FailEvent<T> throwing(Function<AssertionError, Throwable> throwable) {
         ((FailEvent<T>) additional).throwing(throwable);
 
         return this;

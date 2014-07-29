@@ -19,6 +19,8 @@
 
 package com.redhat.synq;
 
+import java.io.StringReader;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -34,17 +36,35 @@ import java.util.function.Supplier;
  */
 public interface FailEvent<T> extends Event<T> {
     /**
-     * Grabs a throwable from the supplier at the time of failure. Useful for detail messages that
-     * need to be evaluated at the time of failure. If your exception does not depend on this
-     * behavior, it may be simpler to use {@link #throwing(Throwable)}.
+     * Instead of throwing an {@link java.lang.AssertionError}, throw an exception as created by the
+     * passed function. This function accepts the error, so you are encouraged to use it as the
+     * cause of your custom exception. The assertion error will contain valuable information related
+     * to the event.
+     * <p/>
+     * Method references may proof especially terse if you do not require a detail message:
+     * <ul>
+     *     <li>{@code throwing(MySpecificException::new) // uses AssertionError as cause}</li>
+     *     <li>{@code throwing(e -> new MySpecificException("detail message", relevantObj, e))}</li>
+     * </ul>
      */
-    FailEvent<T> throwing(Supplier<Throwable> throwable);
+    FailEvent<T> throwing(Function<AssertionError, Throwable> throwable);
 
     /**
-     * Throws a specific exception instance.
+     * Instead of throwing an {@link java.lang.AssertionError}, throws a specific exception instance
+     * instead.
+     * <p/>
+     * Exception stack traces are filled in at creation, however the FailEvent will overwrite the
+     * original stack trace with a new one just before the exception is thrown to add context.
+     * <p/>
+     * While not as terse, it is encouraged to use {@link #throwing(java.util.function.Function)}
+     * instead to retain event information, like so:
+     * <ul>
+     *     <li>{@code throwing(MySpecificException::new) // uses AssertionError as cause}</li>
+     *     <li>{@code throwing(e -> new MySpecificException("detail message", relevantObj, e))}</li>
+     * </ul>
      */
     default FailEvent<T> throwing(Throwable throwable) {
-        return throwing(() -> throwable);
+        return throwing(e -> throwable);
     }
 
     @Override
