@@ -28,10 +28,6 @@ public class ForwardingFailPollEvent<T> extends ForwardingFailEvent<T> implement
     public ForwardingFailPollEvent(PollEvent<?> original) {
         super(original.ignoring(Exception.class));
     }
-    
-    public ForwardingFailPollEvent(PollEvent<?> original, Throwable throwable) {
-        super(original.ignoring(Exception.class), throwable);
-    }
 
     @SuppressWarnings("unchecked")
     @Override
