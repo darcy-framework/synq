@@ -41,10 +41,10 @@ public interface FailEvent<T> extends Event<T> {
     FailEvent<T> throwing(Supplier<Throwable> throwable);
 
     /**
-     * Throws a specific exception instance. Fills in the stack trace at the time it is thrown.
+     * Throws a specific exception instance.
      */
     default FailEvent<T> throwing(Throwable throwable) {
-        return throwing(throwable::fillInStackTrace);
+        return throwing(() -> throwable);
     }
 
     @Override
