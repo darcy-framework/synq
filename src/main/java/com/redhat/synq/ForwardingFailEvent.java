@@ -34,18 +34,16 @@ public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEven
     
     public ForwardingFailEvent(Event<?> original) {
         this.original = original;
-    }
-    
-    public ForwardingFailEvent(Event<?> original, Throwable throwable) {
-        this.original = original;
 
-        throwing(throwable);
+        describedAs(original::toString);
     }
     
     @Override
     public T waitUpTo(Duration duration) {
+        Object result;
+
         try {
-            original.waitUpTo(duration);
+            result = original.waitUpTo(duration);
         } catch (TimeoutException e) {
             // If a fail event times out, this is okay -- it means nothing "failed" in the given 
             // time, which is what we would like to see.
@@ -56,8 +54,11 @@ public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEven
             // If we got here, then we got a result before the timeout. For a fail event, this is
             // the condition to throw the associated exception.
 
-            // TODO: Build assertion error message
-            AssertionError e = new AssertionError();
+            StringBuilder detailMessage = new StringBuilder("Fail event occurred, ")
+                    .append("'").append(original).append("'\n")
+                    .append("Result of event was: ").append(result);
+
+            AssertionError e = new AssertionError(detailMessage);
 
             if (throwable != null) {
                 throwUnchecked(throwable.apply(e).fillInStackTrace());
