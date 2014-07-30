@@ -103,7 +103,7 @@ public class HamcrestCondition<T> implements Condition<T> {
                 ? desc
                 : "the item under examination is " + matcher;
 
-        toString.append(desc).append('\n');
+        toString.append(desc).append(",\n");
 
         if(isMet) {
             toString.append("  as seen by last examined result, ");
