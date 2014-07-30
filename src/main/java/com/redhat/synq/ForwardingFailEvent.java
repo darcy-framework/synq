@@ -34,8 +34,6 @@ public class ForwardingFailEvent<T> implements FailEvent<T> {
     
     public ForwardingFailEvent(Event<?> original) {
         this.original = original;
-
-        describedAs(original::toString);
     }
     
     @Override
