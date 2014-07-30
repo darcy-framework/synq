@@ -54,9 +54,9 @@ public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEven
             // If we got here, then we got a result before the timeout. For a fail event, this is
             // the condition to throw the associated exception.
 
-            StringBuilder detailMessage = new StringBuilder("Fail event occurred, ")
-                    .append("'").append(original).append("'\n")
-                    .append("Result of event was: ").append(result);
+            StringBuilder detailMessage = new StringBuilder("Fail event occurred with result, ")
+                    .append("\"").append(result).append("\"")
+                    .append(original);
 
             AssertionError e = new AssertionError(detailMessage);
 

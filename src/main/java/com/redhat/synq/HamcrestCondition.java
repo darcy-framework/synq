@@ -94,9 +94,22 @@ public class HamcrestCondition<T> implements Condition<T> {
 
     @Override
     public String toString() {
-        return description.get() +
-                "\nLast examined result <" + lastResult + "> " +
-                (matcher.matches(lastResult) ? "is " : "is not ") + matcher.toString();
+        StringBuilder toString = new StringBuilder();
+
+        String desc = description.get();
+
+        if (!"".equals(desc) && desc != null) {
+            toString.append("Event occurs when ").append(desc).append(",\n");
+            toString.append("as seen by last examined result, ");
+        } else {
+            toString.append("Last examined result was ");
+        }
+
+        toString.append("\"").append(lastResult).append("\"")
+                .append(matcher.matches(lastResult) ? ", which is " : ", which is not ")
+                .append(matcher.toString());
+
+        return toString.toString();
     }
 
     public Callable<T> getSupplier() {
