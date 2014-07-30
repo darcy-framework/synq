@@ -95,7 +95,7 @@ public class MultiEvent<T> implements Event<T> {
 
     @Override
     public String toString() {
-        return original + "\n, or " + additional;
+        return original + ",\nor " + additional;
     }
 
     private synchronized void finishWithResult(T result) {
