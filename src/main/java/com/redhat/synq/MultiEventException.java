@@ -19,19 +19,9 @@
 
 package com.redhat.synq;
 
-public class EventException extends SynqException {
-    public EventException() {
-    }
-
-    public EventException(String message) {
-        super(message);
-    }
-
-    public EventException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public EventException(Throwable cause) {
-        super(cause);
+public class MultiEventException extends SynqException {
+    public MultiEventException(Event<?> eventThatThrewException, Throwable cause) {
+        super("Exception thrown while waiting for an event.\n" +
+                "Event that threw the exception occurs when " + eventThatThrewException, cause);
     }
 }

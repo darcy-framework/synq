@@ -19,7 +19,6 @@
 
 package com.redhat.synq;
 
-import static com.redhat.synq.ThrowableUtil.throwUnchecked;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -32,6 +31,7 @@ public class MultiEvent<T> implements Event<T> {
     protected final Event<? extends T> additional;
     private T firstResult;
     private Throwable throwable;
+    private Thread threadThatThrewException;
     private UncaughtExceptionHandler exceptionHandler = new MultiEventExceptionHandler();
     private CountDownLatch latch = new CountDownLatch(1);
 
@@ -76,7 +76,11 @@ public class MultiEvent<T> implements Event<T> {
         }
 
         if (throwable != null) {
-            throw throwUnchecked(throwable.fillInStackTrace());
+            Event<?> eventThatThrewException = (threadThatThrewException == originalWaiter)
+                    ? original
+                    : additional;
+
+            throw new MultiEventException(eventThatThrewException, throwable);
         }
 
         return firstResult;
@@ -95,15 +99,16 @@ public class MultiEvent<T> implements Event<T> {
     }
 
     private synchronized void finishWithResult(T result) {
-        if (firstResult == null) {
+        if (firstResult == null && throwable == null) {
             firstResult = result;
             latch.countDown();
         }
     }
 
-    private synchronized void finishWithException(Throwable t) {
-        if (throwable == null) {
-            throwable = t;
+    private synchronized void finishWithException(Thread t, Throwable e) {
+        if (throwable == null && firstResult == null) {
+            throwable = e;
+            threadThatThrewException = t;
             latch.countDown();
         }
     }
@@ -112,7 +117,7 @@ public class MultiEvent<T> implements Event<T> {
 
         @Override
         public void uncaughtException(Thread t, Throwable e) {
-            finishWithException(e);
+            finishWithException(t, e);
         }
 
     }
