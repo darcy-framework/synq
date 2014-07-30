@@ -27,14 +27,17 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import org.hamcrest.Matcher;
 
 import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
-public class HamcrestCondition<T> extends AbstractCondition<T> {
+public class HamcrestCondition<T> implements Condition<T> {
     private static final Matcher<Object> isTrueOrNonNull = 
             not(anyOf(nullValue(), equalTo((Object)Boolean.FALSE)));
     
     private Callable<T> item;
     private Matcher<? super T> matcher;
     private T lastResult = null;
+
+    private Supplier<String> description = () -> "";
     
     public static <T> HamcrestCondition<T> matchCallTo(Callable<T> item, Matcher<? super T> matcher) {
         return new HamcrestCondition<T>(item, matcher);
@@ -62,16 +65,12 @@ public class HamcrestCondition<T> extends AbstractCondition<T> {
     public HamcrestCondition(Callable<T> item, Matcher<? super T> matcher) {
         this.item = item;
         this.matcher = matcher;
-
-        describedAs(() -> item + " to be " + matcher.toString());
     }
 
     @Override
     public boolean isMet() {
         try {
             lastResult = item.call();
-
-            describedAs(lastResult + " to be " + matcher.toString());
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
@@ -85,7 +84,21 @@ public class HamcrestCondition<T> extends AbstractCondition<T> {
     public T lastResult() {
         return lastResult;
     }
-    
+
+    @Override
+    public Condition<T> describedAs(Supplier<String> description) {
+        this.description = description;
+
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return description.get() +
+                "\nLast examined result <" + lastResult + "> " +
+                (matcher.matches(lastResult) ? "is " : "is not ") + matcher.toString();
+    }
+
     public Callable<T> getSupplier() {
         return item;
     }
