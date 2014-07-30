@@ -38,8 +38,6 @@ public class MultiEvent<T> implements Event<T> {
     public MultiEvent(Event<? extends T> original, Event<? extends T> additional) {
         this.original = original;
         this.additional = additional;
-
-        describedAs(original + " or " + additional);
     }
 
     @Override
@@ -93,7 +91,7 @@ public class MultiEvent<T> implements Event<T> {
 
     @Override
     public String toString() {
-        return original + " or " + additional;
+        return original + "\n, or " + additional;
     }
 
     private synchronized void finishWithResult(T result) {

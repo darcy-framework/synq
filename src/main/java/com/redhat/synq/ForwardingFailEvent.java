@@ -53,8 +53,8 @@ public class ForwardingFailEvent<T> implements FailEvent<T> {
             // the condition to throw the associated exception.
 
             StringBuilder detailMessage = new StringBuilder("Fail event occurred with result, ")
-                    .append("\"").append(result).append("\"")
-                    .append(original);
+                    .append("\"").append(result).append("\".\n")
+                    .append("Event occurs when ").append(original);
 
             AssertionError e = new AssertionError(detailMessage);
 

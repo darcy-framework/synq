@@ -34,7 +34,7 @@ public class ActionEvent extends AbstractEvent<Void> {
     public ActionEvent(Runnable action) {
         this.action = action;
 
-        describedAs("action to finish (" + action + ")");
+        describedAs("action is finished (" + action + ")");
     }
 
     @Override

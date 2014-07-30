@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class DefaultPollEvent<T> extends AbstractEvent<T> implements PollEvent<T> {
+public class DefaultPollEvent<T> implements PollEvent<T> {
     private static final Duration DEFAULT_POLLING_INTERVAL = Duration.ofSeconds(1);
 
     private final Condition<T> condition;
@@ -102,7 +102,8 @@ public class DefaultPollEvent<T> extends AbstractEvent<T> implements PollEvent<T
 
     @Override
     public String toString() {
-        return condition.toString() + " (polling every " + pollingInterval.toString() +")";
+        return condition.toString() +
+                " (as determined by polling every " + pollingInterval.toString() +")";
     }
     
     private void throwIfNotIgnored(Throwable t) throws RuntimeException {

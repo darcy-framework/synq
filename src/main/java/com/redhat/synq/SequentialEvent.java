@@ -22,8 +22,9 @@ package com.redhat.synq;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.function.Supplier;
 
-public class SequentialEvent<T> extends AbstractEvent<T> {
+public class SequentialEvent<T> implements Event<T> {
     protected final Event<?> original;
     protected final Event<? extends T> additional;
     protected final TimeKeeper timeKeeper;
@@ -37,8 +38,6 @@ public class SequentialEvent<T> extends AbstractEvent<T> {
         this.original = Objects.requireNonNull(original, "original");
         this.additional = Objects.requireNonNull(additional, "additional");
         this.timeKeeper = Objects.requireNonNull(timeKeeper, "timeKeeper");
-
-        describedAs(original + " and then " + additional);
     }
     
     @Override
@@ -55,7 +54,19 @@ public class SequentialEvent<T> extends AbstractEvent<T> {
             throw new TimeoutException(this, duration);
         }
     }
-    
+
+    @Override
+    public Event<T> describedAs(Supplier<String> description) {
+        additional.describedAs(description);
+
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return original + "\nand then " + additional;
+    }
+
     @Override
     public Event<T> after(Runnable action) {
         return new SequentialEvent<T>(original,
