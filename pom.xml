@@ -31,6 +31,20 @@
         <url>https://github.com/darcy-framework/synq</url>
     </scm>
 
+    <developers>
+        <developer>
+            <id>alechenninger</id>
+            <name>Alec Henninger</name>
+            <email>ahenning@redhat.com</email>
+            <organization>Red Hat</organization>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+    </developers>
+
     <build>
         <plugins>
             <plugin>
