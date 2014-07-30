@@ -80,7 +80,7 @@ public class MultiEvent<T> implements Event<T> {
                     ? original
                     : additional;
 
-            throw new MultiEventException(eventThatThrewException, throwable);
+            throwMultiEventException(eventThatThrewException);
         }
 
         return firstResult;
@@ -96,6 +96,20 @@ public class MultiEvent<T> implements Event<T> {
     @Override
     public String toString() {
         return original + ",\nor " + additional;
+    }
+
+    /**
+     * Unwraps cause of throwable if the throwable is, itself, a MultiEventException. This
+     * eliminates much excessive noise that is purely implementation detail of MultiEvents from the
+     * stack trace.
+     */
+    private void throwMultiEventException(Event<?> eventThatThrewException) {
+        while(throwable instanceof MultiEventException && throwable.getCause() != null) {
+            eventThatThrewException = ((MultiEventException) throwable).getEvent();
+            throwable = throwable.getCause();
+        }
+
+        throw new MultiEventException(eventThatThrewException, throwable);
     }
 
     private synchronized void finishWithResult(T result) {

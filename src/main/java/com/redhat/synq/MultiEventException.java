@@ -20,8 +20,16 @@
 package com.redhat.synq;
 
 public class MultiEventException extends SynqException {
+    private final Event<?> event;
+
     public MultiEventException(Event<?> eventThatThrewException, Throwable cause) {
         super("Exception thrown while waiting for an event.\n" +
                 "Event that threw the exception occurs when " + eventThatThrewException, cause);
+
+        this.event = eventThatThrewException;
+    }
+
+    public Event<?> getEvent() {
+        return event;
     }
 }
