@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 /**
  * Essentially transforms an event to its "inverse." See {@link FailEvent} javadoc.
  */
-public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEvent<T> {
+public class ForwardingFailEvent<T> implements FailEvent<T> {
     protected Event<?> original;
     private Function<AssertionError, Throwable> throwable;
     
@@ -79,15 +79,24 @@ public class ForwardingFailEvent<T> extends AbstractEvent<T> implements FailEven
 
     @Override
     public FailEvent<T> describedAs(String description) {
-        super.describedAs(description);
+        original.describedAs(description);
 
         return this;
     }
 
     @Override
     public FailEvent<T> describedAs(Supplier<String> description) {
-        super.describedAs(description);
+        original.describedAs(description);
 
         return this;
+    }
+
+    @Override
+    public String toString() {
+        String throwableClass = (throwable == null)
+                ? AssertionError.class.getSimpleName()
+                : throwable.apply(new AssertionError()).getClass().getSimpleName();
+
+        return "a(n) " + throwableClass + " is thrown because " + original;
     }
 }

@@ -25,8 +25,9 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Supplier;
 
-public class MultiEvent<T> extends AbstractEvent<T> {
+public class MultiEvent<T> implements Event<T> {
     private final Event<? extends T> original;
     protected final Event<? extends T> additional;
     private T firstResult;
@@ -81,6 +82,18 @@ public class MultiEvent<T> extends AbstractEvent<T> {
         }
 
         return firstResult;
+    }
+
+    @Override
+    public Event<T> describedAs(Supplier<String> description) {
+        additional.describedAs(description);
+
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return original + " or " + additional;
     }
 
     private synchronized void finishWithResult(T result) {
