@@ -170,12 +170,12 @@ public class SequentialEventTest {
 
         SequentialEvent<Object> event = (SequentialEvent<Object>)
                 new SequentialEvent<Object>(event1, event2).after(action);
-        SequentialEvent<Object> additional = (SequentialEvent<Object>) event.additional;
+        SequentialEvent<Object> additional = (SequentialEvent<Object>) event.second;
 
-        assertSame(event1, event.original);
-        assertSame(additional.additional, event2);
+        assertSame(event1, event.first);
+        assertSame(additional.second, event2);
 
-        additional.original.waitUpTo(TEN_MILLIS);
+        additional.first.waitUpTo(TEN_MILLIS);
         verify(action).run();
     }
 }

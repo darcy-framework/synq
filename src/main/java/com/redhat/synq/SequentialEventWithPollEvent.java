@@ -24,22 +24,22 @@ import java.util.function.Supplier;
 
 public class SequentialEventWithPollEvent<T> extends SequentialEvent<T> implements PollEvent<T> {
     
-    public SequentialEventWithPollEvent(Event<?> original, PollEvent<? extends T> additional) {
-        super(original, additional);
+    public SequentialEventWithPollEvent(Event<?> first, PollEvent<? extends T> second) {
+        super(first, second);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public PollEvent<T> after(Runnable action) {
-        return new SequentialEventWithPollEvent<T>(original, 
+        return new SequentialEventWithPollEvent<T>(first,
                 new SequentialEventWithPollEvent<>(new ActionEvent(action),
-                        (PollEvent<T>) additional));
+                        (PollEvent<T>) second));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public PollEvent<T> pollingEvery(Duration pollingInterval) {
-        ((PollEvent<T>) additional).pollingEvery(pollingInterval);
+        ((PollEvent<T>) second).pollingEvery(pollingInterval);
         
         return this;
     }
@@ -47,7 +47,7 @@ public class SequentialEventWithPollEvent<T> extends SequentialEvent<T> implemen
     @SuppressWarnings("unchecked")
     @Override
     public PollEvent<T> ignoring(Class<? extends Exception> exception) {
-        ((PollEvent<T>) additional).ignoring(exception);
+        ((PollEvent<T>) second).ignoring(exception);
         
         return this;
     }

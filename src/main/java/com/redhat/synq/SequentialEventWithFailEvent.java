@@ -24,22 +24,22 @@ import java.util.function.Supplier;
 
 public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implements FailEvent<T> {
     
-    public SequentialEventWithFailEvent(Event<?> original, FailEvent<? extends T> additional) {
-        super(original, additional);
+    public SequentialEventWithFailEvent(Event<?> first, FailEvent<? extends T> second) {
+        super(first, second);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public FailEvent<T> after(Runnable action) {
-        return new SequentialEventWithFailEvent<T>(original, 
+        return new SequentialEventWithFailEvent<T>(first,
                 new SequentialEventWithFailEvent<>(new ActionEvent(action),
-                        (FailEvent<T>) additional));
+                        (FailEvent<T>) second));
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public FailEvent<T> throwing(Throwable throwable) {
-        ((FailEvent<T>) additional).throwing(throwable);
+        ((FailEvent<T>) second).throwing(throwable);
         
         return this;
     }
@@ -47,7 +47,7 @@ public class SequentialEventWithFailEvent<T> extends SequentialEvent<T> implemen
     @SuppressWarnings("unchecked")
     @Override
     public FailEvent<T> throwing(Function<AssertionError, Throwable> throwable) {
-        ((FailEvent<T>) additional).throwing(throwable);
+        ((FailEvent<T>) second).throwing(throwable);
 
         return this;
     }

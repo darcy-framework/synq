@@ -25,18 +25,18 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class SequentialEvent<T> implements Event<T> {
-    protected final Event<?> original;
-    protected final Event<? extends T> additional;
+    protected final Event<?> first;
+    protected final Event<? extends T> second;
     protected final TimeKeeper timeKeeper;
     
-    public SequentialEvent(Event<?> original, Event<? extends T> additional) {
-        this(original, additional, TimeKeeper.systemTimeKeeper());
+    public SequentialEvent(Event<?> first, Event<? extends T> second) {
+        this(first, second, TimeKeeper.systemTimeKeeper());
     }
 
-    public SequentialEvent(Event<?> original, Event<? extends T> additional,
+    public SequentialEvent(Event<?> first, Event<? extends T> second,
             TimeKeeper timeKeeper) {
-        this.original = Objects.requireNonNull(original, "original");
-        this.additional = Objects.requireNonNull(additional, "additional");
+        this.first = Objects.requireNonNull(first, "first");
+        this.second = Objects.requireNonNull(second, "second");
         this.timeKeeper = Objects.requireNonNull(timeKeeper, "timeKeeper");
     }
     
@@ -45,11 +45,11 @@ public class SequentialEvent<T> implements Event<T> {
         Instant start = timeKeeper.instant();
 
         try {
-            original.waitUpTo(duration);
+            first.waitUpTo(duration);
 
             Duration remaining = duration.minus(Duration.between(start, timeKeeper.instant()));
 
-            return additional.waitUpTo(remaining);
+            return second.waitUpTo(remaining);
         } catch (TimeoutException t) {
             throw new TimeoutException(this, duration);
         }
@@ -57,46 +57,46 @@ public class SequentialEvent<T> implements Event<T> {
 
     @Override
     public Event<T> describedAs(Supplier<String> description) {
-        additional.describedAs(description);
+        second.describedAs(description);
 
         return this;
     }
 
     @Override
     public String toString() {
-        return original + "\nand then " + additional;
+        return first + "\nand then " + second;
     }
 
     @Override
     public Event<T> after(Runnable action) {
-        return new SequentialEvent<T>(original,
-                new SequentialEvent<T>(new ActionEvent(action), additional, timeKeeper),
+        return new SequentialEvent<T>(first,
+                new SequentialEvent<T>(new ActionEvent(action), second, timeKeeper),
                 timeKeeper);
     }
     
     @Override
     public Event<T> or(Event<? extends T> event) {
-        return new SequentialEvent<>(original, new MultiEvent<T>(additional, event), timeKeeper);
+        return new SequentialEvent<>(first, new MultiEvent<T>(second, event), timeKeeper);
     }
     
     @Override
     public PollEvent<T> or(Condition<? extends T> condition) {
-        return new SequentialEventWithPollEvent<>(original,
-                new MultiEventWithPollEvent<T>(additional, condition.asEvent(timeKeeper)));
+        return new SequentialEventWithPollEvent<>(first,
+                new MultiEventWithPollEvent<T>(second, condition.asEvent(timeKeeper)));
     }
     
     @Override
     public FailEvent<T> failIf(Event<?> failEvent) {
-        return new SequentialEventWithFailEvent<T>(original,
-                new MultiEventWithFailEvent<T>(additional, new ForwardingFailEvent<T>(failEvent)));
+        return new SequentialEventWithFailEvent<T>(first,
+                new MultiEventWithFailEvent<T>(second, new ForwardingFailEvent<T>(failEvent)));
     }
     
     @Override
     public FailPollEvent<T> failIf(Condition<?> failCondition) {
         PollEvent<?> failEvent = failCondition.asEvent(timeKeeper);
         
-        return new SequentialEventWithFailPollEvent<T>(original, 
-                new MultiEventWithFailPollEvent<T>(additional, 
+        return new SequentialEventWithFailPollEvent<T>(first,
+                new MultiEventWithFailPollEvent<T>(second,
                         new ForwardingFailPollEvent<T>(failEvent)));
     }
 }

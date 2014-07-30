@@ -26,37 +26,37 @@ import java.util.function.Supplier;
 public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> implements
         FailPollEvent<T> {
     
-    public SequentialEventWithFailPollEvent(Event<?> original, 
-            FailPollEvent<? extends T> additional) {
-        super(original, additional);
+    public SequentialEventWithFailPollEvent(Event<?> first,
+            FailPollEvent<? extends T> second) {
+        super(first, second);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public FailPollEvent<T> after(Runnable action) {
-        return new SequentialEventWithFailPollEvent<T>(original,
+        return new SequentialEventWithFailPollEvent<T>(first,
                 new SequentialEventWithFailPollEvent<>(new ActionEvent(action),
-                        (FailPollEvent<T>) additional));
+                        (FailPollEvent<T>) second));
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public FailPollEvent<T> throwing(Throwable throwable) {
-        ((FailEvent<T>) additional).throwing(throwable);
+        ((FailEvent<T>) second).throwing(throwable);
         return this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public FailPollEvent<T> throwing(Function<AssertionError, Throwable> throwable) {
-        ((FailEvent<T>) additional).throwing(throwable);
+        ((FailEvent<T>) second).throwing(throwable);
         return this;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public FailPollEvent<T> pollingEvery(Duration pollingInterval) {
-        ((PollEvent<T>) additional).pollingEvery(pollingInterval);
+        ((PollEvent<T>) second).pollingEvery(pollingInterval);
         
         return this;
     }
@@ -64,7 +64,7 @@ public class SequentialEventWithFailPollEvent<T> extends SequentialEvent<T> impl
     @SuppressWarnings("unchecked")
     @Override
     public FailPollEvent<T> ignoring(Class<? extends Exception> exception) {
-        ((PollEvent<T>) additional).ignoring(exception);
+        ((PollEvent<T>) second).ignoring(exception);
         
         return this;
     }
