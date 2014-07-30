@@ -17,6 +17,20 @@
     <description>A small library for syncing up a thread with some flexible configuration of asynchronous event(s).</description>
     <url>https://github.com/darcy-framework/synq</url>
 
+    <licenses>
+        <license>
+            <name>GNU General Public License, Version 3</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/darcy-framework/synq.git</connection>
+        <developerConnection>scm:git:git@github.com:darcy-framework/synq.git</developerConnection>
+        <url>https://github.com/darcy-framework/synq</url>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
