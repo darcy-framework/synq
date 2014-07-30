@@ -19,7 +19,6 @@
 
 package com.redhat.synq;
 
-import java.io.StringReader;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -63,6 +62,7 @@ public interface FailEvent<T> extends Event<T> {
      *     <li>{@code throwing(e -> new MySpecificException("detail message", relevantObj, e))}</li>
      * </ul>
      */
+    @Experimental
     default FailEvent<T> throwing(Throwable throwable) {
         return throwing(e -> throwable);
     }

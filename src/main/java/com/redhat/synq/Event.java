@@ -84,17 +84,20 @@ public interface Event<T> {
     }
 
     /**
-     * Most Event objects are constructed in a such a way that it is difficult to programmatically
+     * Some Event objects are constructed in a such a way that it is difficult to programmatically
      * determine an appropriate description to return for {@link #toString()}. The description in
-     * this message will change the output of {@link #toString()} to <code>description</code>.
+     * this message will allow events to replace or supplement their {@link #toString()} methods.
      *
-     * <p>The output of {@link #toString()} is what is used in
-     * {@link com.redhat.synq.TimeoutException TimeoutExceptions}, in the form, "Timed out after
-     * ${duration} waiting for ${event.toString()}."
+     * <p>The output of {@link #toString()} is what is used when exceptions are thrown throughout
+     * Synq, always in the form, "Event occurs when ${event.toString()}."
      *
-     * @param description A description that works well with a timeout message. That is, it should
-     * fit grammatically in the sentence, "Timed out after ${duration} waiting for ${description}."
+     * <p>This override accepts a function that returns a string, so that a description can be
+     * evaluated lazily or change over time where appropriate.
+     *
+     * @param description A function that returns a description that correctly completes the
+     * sentence, "Event occurs when ${description}".
      */
+    @Experimental
     Event<T> describedAs(Supplier<String> description);
 
     /**

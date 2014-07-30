@@ -51,6 +51,7 @@ public interface Condition<T> {
         return describedAs(() -> description);
     }
 
+    @Experimental
     Condition<T> describedAs(Supplier<String> description);
     
     /**
