@@ -19,6 +19,7 @@
 
 package com.redhat.synq;
 
+import static com.redhat.synq.ThrowableUtil.throwUnchecked;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -76,7 +77,7 @@ public class MultiEvent<T> extends AbstractEvent<T> {
         }
 
         if (throwable != null) {
-            throw new EventException(throwable);
+            throw throwUnchecked(throwable.fillInStackTrace());
         }
 
         return firstResult;

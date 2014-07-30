@@ -100,13 +100,10 @@ public class MultiEventTest {
         assertEquals("event1", result);
     }
 
-    @Test
+    @Test(expected = TestException.class)
     public void shouldThrowAnEventExceptionWithCauseIfOneEventThrowsAnExceptionBeforeTheOtherOccurs() {
         Event<String> event1 = new FakeEvent<>(() -> { throw new TestException(); }, FIFTY_MILLIS);
-        Event<String> event2 = new FakeEvent<>(() -> "event2", ONE_HUNDRED_MILLIS);
-
-        expectedException.expect(EventException.class);
-        expectedException.expectCause(instanceOf(TestException.class));
+        Event<String> event2 = new FakeEvent<>(() -> "event2", ONE_HUNDRED_MILLIS);;
 
         new MultiEvent<>(event1, event2)
                 .waitUpTo(200, MILLIS);
