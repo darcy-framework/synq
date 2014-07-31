@@ -115,8 +115,9 @@ public class HamcrestCondition<T> implements Condition<T> {
 
             toString.append("\"").append(lastResult).append("\",\n")
                     .append(isMet ? "  which is " : "  which is not ").append(matcher);
-        } catch (RuntimeException ignored) {
-            // no more details, then
+        } catch (RuntimeException e) {
+            // Couldn't get more details
+            toString.append(desc).append(".");
         }
 
         return toString.toString();
