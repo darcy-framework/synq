@@ -96,23 +96,28 @@ public class HamcrestCondition<T> implements Condition<T> {
     public String toString() {
         StringBuilder toString = new StringBuilder();
 
-        boolean isMet = matcher.matches(lastResult);
         String desc = description.get();
-
         desc = (!"".equals(desc) && desc != null)
                 ? desc
                 : "the item under examination is " + matcher;
 
-        toString.append(desc).append(",\n");
+        try {
+            // Try to determine some more details
+            boolean isMet = matcher.matches(lastResult);
 
-        if(isMet) {
-            toString.append("  as seen by last examined result, ");
-        } else {
-            toString.append("  however the last examined result was, ");
+            toString.append(desc).append(",\n");
+
+            if(isMet) {
+                toString.append("  as seen by last examined result, ");
+            } else {
+                toString.append("  however the last examined result was, ");
+            }
+
+            toString.append("\"").append(lastResult).append("\",\n")
+                    .append(isMet ? "  which is " : "  which is not ").append(matcher);
+        } catch (RuntimeException ignored) {
+            // no more details, then
         }
-
-        toString.append("\"").append(lastResult).append("\",\n")
-                .append(isMet ? "  which is " : "  which is not ").append(matcher);
 
         return toString.toString();
     }
