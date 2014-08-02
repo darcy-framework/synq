@@ -55,6 +55,30 @@ after(myObject::doSomething)
 
 No timeout exception will be thrown here, because we aren't expecting anything in particular to happen. We only want to fail if something we don't want to happen, happens, and if that something doesn't happen within our timeout (10 seconds in this case), then we'll happily move along.
 
+maven
+=====
+
+```xml
+<dependency>
+    <groupId>com.redhat.synq</groupId>
+    <artifactId>synq</artifactId>
+    <version>0.1-SNAPSHOT</version>
+</dependency>
+```
+
+To use snapshot versions, you'll need Sonatype's snapshot repo in your pom or settings.xml.
+
+```xml
+<repositories>
+    <repository>
+        <id>central-snapshots</id>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <releases><enabled>false</enabled></releases>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+</repositories>
+```
+
 license
 =======
 
