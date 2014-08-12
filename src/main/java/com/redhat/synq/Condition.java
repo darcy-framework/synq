@@ -65,7 +65,7 @@ public interface Condition<T> {
      * @return The condition as a {@link PollEvent}
      */
     default PollEvent<T> asEvent() {
-        return new DefaultPollEvent<T>(this);
+        return new ThreadedPollEvent<T>(this);
     }
 
     /**
@@ -79,7 +79,7 @@ public interface Condition<T> {
      * @return The condition as a {@link PollEvent}
      */
     default PollEvent<T> asEvent(TimeKeeper timeKeeper) {
-        return new DefaultPollEvent<T>(this, timeKeeper);
+        return new ThreadedPollEvent<T>(this, timeKeeper);
     }
     
     static <T> Condition<T> matchCallTo(Callable<T> item, CheckedPredicate<? super T> predicate) {
