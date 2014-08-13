@@ -61,7 +61,7 @@ public interface Condition<T> {
      * Note that while polling is very flexible, it has significant reliability drawbacks when
      * compared to true event listeners.
      * 
-     * @see {@link DefaultPollEvent}
+     * @see {@link com.redhat.synq.ThreadedPollEvent}
      * @return The condition as a {@link PollEvent}
      */
     default PollEvent<T> asEvent() {
@@ -75,7 +75,7 @@ public interface Condition<T> {
      * Note that while polling is very flexible, it has significant reliability drawbacks when
      * compared to true event listeners.
      *
-     * @see {@link DefaultPollEvent}
+     * @see {@link com.redhat.synq.ThreadedPollEvent}
      * @return The condition as a {@link PollEvent}
      */
     default PollEvent<T> asEvent(TimeKeeper timeKeeper) {

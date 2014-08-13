@@ -30,7 +30,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Supplier;
 
+/**
+ * Polls until a condition is met, where all condition evaluation (via
+ * {@link com.redhat.synq.Condition#isMet()}) is gated through the work queue of a single thread
+ * executor associated with the thread that created the poll event. That is, if a thread is
+ * simultaneously awaiting multiple ThreadedPollEvents that it constructed using the familiar,
+ * fluent {@link com.redhat.synq.Event} API, each poll event will evaluate their conditions using a
+ * shared single threaded executor service. Therefore, conditions will never be evaluated
+ * simultaneously, allowing non-thread-safe code to be examined in conditions.
+ */
 public class ThreadedPollEvent<T> implements PollEvent<T> {
+    /**
+     * Each thread that constructs a poll event gets one, and only, associated single thread
+     * executor.
+     *
+     * @see #ThreadedPollEvent(Condition)
+     * @see #ThreadedPollEvent(Condition, TimeKeeper)
+     */
     private static ThreadLocal<ExecutorService> pollers = new ThreadLocal<ExecutorService>() {
         @Override
         protected ExecutorService initialValue() {
@@ -47,10 +63,23 @@ public class ThreadedPollEvent<T> implements PollEvent<T> {
     private Duration pollingInterval = DEFAULT_POLLING_INTERVAL;
     private Set<Class<? extends Exception>> ignoredExceptions = new HashSet<>();
 
+    /**
+     * Creates a ThreadedPollEvent that evaluates the specified condition, using the system's real
+     * clock and the current thread's associated single thread executor service.
+     *
+     * @see #pollers
+     */
     public ThreadedPollEvent(Condition<T> condition) {
         this(condition, TimeKeeper.systemTimeKeeper(), pollers.get());
     }
 
+    /**
+     * Creates a ThreadedPollEvent that evaluates the specified condition, using the specified
+     * {@link com.redhat.synq.TimeKeeper}, and the current thread's associated single thread
+     * executor service. Useful for testing with a deterministic, mock TimeKeeper.
+     *
+     * @see #pollers
+     */
     public ThreadedPollEvent(Condition<T> condition, TimeKeeper timeKeeper) {
         this(condition, timeKeeper, pollers.get());
     }
