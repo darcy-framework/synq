@@ -164,6 +164,6 @@ public class ThreadedPollEvent<T> implements PollEvent<T> {
             }
         }
 
-        throw ThrowableUtil.throwUnchecked(t);
+        throw ThrowableUtil.throwUnchecked(new ConditionEvaluationException(t));
     }
 }
