@@ -47,7 +47,7 @@ public class ThreadedPollEvent<T> implements PollEvent<T> {
      * @see #ThreadedPollEvent(Condition)
      * @see #ThreadedPollEvent(Condition, TimeKeeper)
      */
-    private static ThreadLocal<ExecutorService> pollers = new ThreadLocal<ExecutorService>() {
+    private static final ThreadLocal<ExecutorService> POLLERS = new ThreadLocal<ExecutorService>() {
         @Override
         protected ExecutorService initialValue() {
             return Executors.newSingleThreadExecutor();
@@ -67,10 +67,10 @@ public class ThreadedPollEvent<T> implements PollEvent<T> {
      * Creates a ThreadedPollEvent that evaluates the specified condition, using the system's real
      * clock and the current thread's associated single thread executor service.
      *
-     * @see #pollers
+     * @see #POLLERS
      */
     public ThreadedPollEvent(Condition<T> condition) {
-        this(condition, TimeKeeper.systemTimeKeeper(), pollers.get());
+        this(condition, TimeKeeper.systemTimeKeeper(), POLLERS.get());
     }
 
     /**
@@ -78,10 +78,10 @@ public class ThreadedPollEvent<T> implements PollEvent<T> {
      * {@link com.redhat.synq.TimeKeeper}, and the current thread's associated single thread
      * executor service. Useful for testing with a deterministic, mock TimeKeeper.
      *
-     * @see #pollers
+     * @see #POLLERS
      */
     public ThreadedPollEvent(Condition<T> condition, TimeKeeper timeKeeper) {
-        this(condition, timeKeeper, pollers.get());
+        this(condition, timeKeeper, POLLERS.get());
     }
 
     public ThreadedPollEvent(Condition<T> condition, TimeKeeper timeKeeper,

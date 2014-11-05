@@ -27,10 +27,20 @@ import java.util.concurrent.CountDownLatch;
 public class EventListener<T> extends AbstractEvent<T> {
     private CountDownLatch latch = new CountDownLatch(1);
     private T result;
+    private Exception exception;
     
-    public void trigger(T result) {
-        this.result = result;
-        latch.countDown();
+    public synchronized void trigger(T result) {
+        if (exception == null) {
+            this.result = result;
+            latch.countDown();
+        }
+    }
+
+    public synchronized void triggerError(Exception exception) {
+        if (result == null) {
+            this.exception = exception;
+            latch.countDown();
+        }
     }
     
     @Override
@@ -47,7 +57,11 @@ public class EventListener<T> extends AbstractEvent<T> {
         if (timedOut) {
             throw new TimeoutException(this, duration);
         }
-        
+
+        if (exception != null) {
+            ThrowableUtil.throwUnchecked(exception);
+        }
+
         return result;
     }
     
