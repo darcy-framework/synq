@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 /**
  * Indicates some public API is to be used extreme caution, as it is under active iteration, where
  * it will likely undergo breaking changes or be removed completely.
- * <p/>
+ * <p>
  * Input on the effectiveness (or lack thereof) of experimental APIs is greatly appreciated!
  */
 @Retention(RetentionPolicy.CLASS)

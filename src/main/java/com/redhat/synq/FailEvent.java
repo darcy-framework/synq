@@ -39,7 +39,7 @@ public interface FailEvent<T> extends Event<T> {
      * passed function. This function accepts the error, so you are encouraged to use it as the
      * cause of your custom exception. The assertion error will contain valuable information related
      * to the event.
-     * <p/>
+     * <p>
      * Method references may proof especially terse if you do not require a detail message:
      * <ul>
      *     <li>{@code throwing(MySpecificException::new) // uses AssertionError as cause}</li>
@@ -51,10 +51,10 @@ public interface FailEvent<T> extends Event<T> {
     /**
      * Instead of throwing an {@link java.lang.AssertionError}, throws a specific exception instance
      * instead.
-     * <p/>
+     * <p>
      * Exception stack traces are filled in at creation, however the FailEvent will overwrite the
      * original stack trace with a new one just before the exception is thrown to add context.
-     * <p/>
+     * <p>
      * While not as terse, it is encouraged to use {@link #throwing(java.util.function.Function)}
      * instead to retain event information, like so:
      * <ul>
