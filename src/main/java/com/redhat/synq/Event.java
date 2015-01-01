@@ -24,6 +24,7 @@ import org.hamcrest.Matcher;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -140,6 +141,19 @@ public interface Event<T> {
      */
     default Event<T> after(Runnable action) {
         return new SequentialEvent<>(new ActionEvent(action), this);
+    }
+
+    /**
+     * Returns a new event based on the existing, who's awaited result is modified with the given
+     * mapper function.
+     */
+    default <U> Event<U> map(Function<T, U> mapper) {
+        return new AbstractEvent<U>() {
+            @Override
+            public U waitUpTo(Duration duration) {
+                return mapper.apply(Event.this.waitUpTo(duration));
+            }
+        };
     }
 
     /**
