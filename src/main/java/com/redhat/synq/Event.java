@@ -181,6 +181,34 @@ public interface Event<T> {
         return or(new HamcrestCondition<>(item, matcher));
     }
 
+    default FailEvent<T> shouldNotExpect(Event<?> toOccur) {
+        return failIf(toOccur);
+    }
+
+    default FailPollEvent<T> shouldNotExpect(Condition<?> isMet) {
+        return failIf(isMet);
+    }
+
+    default FailPollEvent<T> shouldNotExpect(Callable<?> returnsTrueOrNonNull) {
+        return failIf(returnsTrueOrNonNull);
+    }
+
+    default <R> FailPollEvent<T> shouldNotExpect(R item, CheckedPredicate<? super R> predicate) {
+        return failIf(item, predicate);
+    }
+
+    default <R> FailPollEvent<T> shouldNotExpectCallTo(Callable<R> item, CheckedPredicate<? super R> predicate) {
+        return failIfCallTo(item, predicate);
+    }
+
+    default <R> FailPollEvent<T> shouldNotExpect(R item, Matcher<? super R> matcher) {
+        return failIf(item, matcher);
+    }
+
+    default <R> FailPollEvent<T> shouldNotExpectCallTo(Callable<R> item, Matcher<? super R> matcher) {
+        return failIfCallTo(item, matcher);
+    }
+
     /**
      * If this event occurs before the others, then an exception will be thrown as defined by the
      * Throwable parameter.
