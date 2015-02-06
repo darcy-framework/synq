@@ -61,6 +61,34 @@ public final class Synq {
         return expect(new HamcrestCondition<>(item, matcher));
     }
 
+    public static <T> FailEvent<T> shouldNotExpect(Event<T> toOccur) {
+        return failIf(toOccur);
+    }
+
+    public static <T> FailPollEvent<T> shouldNotExpect(Condition<T> isMet) {
+        return failIf(isMet);
+    }
+
+    public static <T> FailPollEvent<T> shouldNotExpect(Callable<T> returnsTrueOrNonNull) {
+        return failIf(returnsTrueOrNonNull);
+    }
+
+    public static <T> FailPollEvent<T> shouldNotExpect(T item, CheckedPredicate<? super T> predicate) {
+        return failIf(item, predicate);
+    }
+
+    public static <T> FailPollEvent<T> shouldNotExpectCallTo(Callable<T> item, CheckedPredicate<? super T> predicate) {
+        return failIfCallTo(item, predicate);
+    }
+
+    public static <T> FailPollEvent<T> shouldNotExpect(T item, Matcher<? super T> matcher) {
+        return failIf(item, matcher);
+    }
+
+    public static <T> FailPollEvent<T> shouldNotExpectCallTo(Callable<T> item, Matcher<? super T> matcher) {
+        return failIfCallTo(item, matcher);
+    }
+
     public static <T> FailEvent<T> failIf(Event<T> occurs) {
         return new ForwardingFailEvent<>(occurs);
     }
