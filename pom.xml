@@ -21,7 +21,7 @@
         <version.maven-release-plugin>2.5.3</version.maven-release-plugin>
         <version.maven-javadoc-plugin>2.10.3</version.maven-javadoc-plugin>
         <version.coveralls-maven-plugin>4.1.0</version.coveralls-maven-plugin>
-        <version.jacoco-maven-plugin>0.7.5</version.jacoco-maven-plugin>
+        <version.jacoco-maven-plugin>0.7.5.201505241946</version.jacoco-maven-plugin>
         <version.maven-gpg-plugin>1.6</version.maven-gpg-plugin>
         <version.nexus-staging-maven-plugin>1.6.6</version.nexus-staging-maven-plugin>
 
