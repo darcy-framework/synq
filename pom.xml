@@ -26,6 +26,7 @@
         <version.nexus-staging-maven-plugin>1.6.6</version.nexus-staging-maven-plugin>
 
         <prerequisites.maven>3.0.4</prerequisites.maven>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
