@@ -19,6 +19,8 @@
 
 package com.redhat.synq;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -39,4 +41,15 @@ public interface FailPollEvent<T> extends FailEvent<T>, PollEvent<T> {
     default FailPollEvent<T> after(Runnable action) {
         return new SequentialEventWithFailPollEvent<>(new ActionEvent(action), this);
     }
+
+    @Override
+    FailPollEvent<T> pollingEvery(Duration pollingInterval);
+
+    @Override
+    default FailPollEvent<T> pollingEvery(long amount, ChronoUnit unit) {
+        return pollingEvery(Duration.of(amount, unit));
+    }
+
+    @Override
+    FailPollEvent<T> ignoring(Class<? extends Exception> exception);
 }
