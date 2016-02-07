@@ -3,3 +3,5 @@
 .project
 .settings
 *.iml
+*.releaseBackup
+release.properties
