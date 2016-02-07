@@ -21,7 +21,6 @@ package com.redhat.synq;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Supplier;
@@ -31,8 +30,7 @@ public class MultiEvent<T> implements Event<T> {
     protected final Event<? extends T> additional;
     private T firstResult;
     private Throwable throwable;
-    private Thread threadThatThrewException;
-    private UncaughtExceptionHandler exceptionHandler = new MultiEventExceptionHandler();
+    private Event<? extends T> eventThatThrewException;
     private CountDownLatch latch = new CountDownLatch(1);
 
     public MultiEvent(Event<? extends T> original, Event<? extends T> additional) {
@@ -43,11 +41,8 @@ public class MultiEvent<T> implements Event<T> {
     @Override
     public T waitUpTo(Duration duration) {
         // Could using an executor service instead make testing easier?
-        Thread originalWaiter = new Thread(() -> finishWithResult(original.waitUpTo(duration)));
-        Thread additionalWaiter = new Thread(() -> finishWithResult(additional.waitUpTo(duration)));
-
-        originalWaiter.setUncaughtExceptionHandler(exceptionHandler);
-        additionalWaiter.setUncaughtExceptionHandler(exceptionHandler);
+        Thread originalWaiter = new Thread(() -> tryWaitUpTo(original, duration));
+        Thread additionalWaiter = new Thread(() -> tryWaitUpTo(additional, duration));
 
         originalWaiter.start();
         additionalWaiter.start();
@@ -76,10 +71,6 @@ public class MultiEvent<T> implements Event<T> {
         }
 
         if (throwable != null) {
-            Event<?> eventThatThrewException = (threadThatThrewException == originalWaiter)
-                    ? original
-                    : additional;
-
             throwMultiEventException(eventThatThrewException);
         }
 
@@ -112,6 +103,14 @@ public class MultiEvent<T> implements Event<T> {
         throw new MultiEventException(eventThatThrewException, throwable);
     }
 
+    private void tryWaitUpTo(Event<? extends T> event, Duration duration) {
+        try {
+            finishWithResult(event.waitUpTo(duration));
+        } catch (Exception e) {
+            finishWithException(event, e);
+        }
+    }
+
     private synchronized void finishWithResult(T result) {
         if (firstResult == null && throwable == null) {
             firstResult = result;
@@ -119,20 +118,11 @@ public class MultiEvent<T> implements Event<T> {
         }
     }
 
-    private synchronized void finishWithException(Thread t, Throwable e) {
+    private synchronized void finishWithException(Event<? extends T> eventThatThrew, Throwable e) {
         if (throwable == null && firstResult == null) {
             throwable = e;
-            threadThatThrewException = t;
+            eventThatThrewException = eventThatThrew;
             latch.countDown();
         }
-    }
-
-    private class MultiEventExceptionHandler implements UncaughtExceptionHandler {
-
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            finishWithException(t, e);
-        }
-
     }
 }
